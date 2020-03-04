@@ -52,11 +52,11 @@ namespace SPI_ROBOT
 
         private string serial_number; public string Serial_Number { get { return serial_number; } set { serial_number = value; } } //registra o SerialNumber da placa
 
-        private string modelo_spi; public string Modelo_spi { get { return modelo_spi; } set { modelo_spi = value; } }          //registra o modelo da AOI 
+        private string modelo_spi; public string Modelo_spi { get { return modelo_spi; } set { modelo_spi = value; } }          //registra o modelo da SPI 
 
         private string componentes_testados_spi; public string Componentes_Testados_SPI { get { return componentes_testados_spi; } set { componentes_testados_spi = value; } }
 
-        private string falhas_spi; public string Falhas_AOI { get { return falhas_spi; } set { falhas_spi = value; } }
+        private string falhas_spi; public string Falhas_SPI { get { return falhas_spi; } set { falhas_spi = value; } }
 
         private string falhas_operador; public string Falhas_Operador { get { return falhas_operador; } set { falhas_operador = value; } }
 
@@ -98,7 +98,7 @@ namespace SPI_ROBOT
             conectado = false;
             try
             {
-                if (Directory.Exists(@"C:\EngTeste\logs"))
+                if (Directory.Exists(@"C:\EngTest\logs"))
                 {
                     conectado = true;
                     
@@ -230,7 +230,7 @@ namespace SPI_ROBOT
 
                 DateTime hora_criacao = File.GetCreationTime(log);                          //captura o horári de criação do arquivo de log
 
-                if (File.Exists("separadores_log.ini")) File.Delete("separadores_log.ini"); //o arquivo separadores_log.ini é utilizado para separar os logs de serialnumber diferentes presente no mesmo arquivo gerado pela AOI
+                if (File.Exists("separadores_log.ini")) File.Delete("separadores_log.ini"); //o arquivo separadores_log.ini é utilizado para separar os logs de serialnumber diferentes presente no mesmo arquivo gerado pela SPI
 
                 int aux_log = 1;
 
@@ -257,7 +257,7 @@ namespace SPI_ROBOT
 
                 /*--- Tratamento dos Logs ---*/
                 
-                int separadores_total = File.ReadLines("separadores_log.ini").Count();                      //atribui a separadores_total a quantidade de separadores que existe no log da AOI
+                int separadores_total = File.ReadLines("separadores_log.ini").Count();                      //atribui a separadores_total a quantidade de separadores que existe no log da SPI
                 #region for (int a = 0; a < separadores_total; a++)                                         //realiza um loop para cada log de placa dentro do arquivo .txt
                 for (int a = 0; a < separadores_total; a++)                                                //realiza um loop para cada log de placa dentro do arquivo .txt
                 {
@@ -306,37 +306,37 @@ namespace SPI_ROBOT
                         #region if ( linha.Contains(".jpg"))
                         if (linha.Contains(".jpg"))
                         {
-                            falhas_maquina++;                           //cada linha que aponta para uma foto .jpg corresponde a uma falha que a AOI identificou, desta forma incrementamos falhas_maquina
+                            falhas_maquina++;                           //cada linha que aponta para uma foto .jpg corresponde a uma falha que a SPI identificou, desta forma incrementamos falhas_maquina
 
                             if (linha.Contains(";F;")) falha_op++;      //na quanta coluna da linha que descreve a falha encontramos as letras P e F, essas lentras idicam como o operador avaliou a falha
 
-                            string[] falha_aoi = linha.Split(';');      //quebra a linha de acord com o separador ';'
+                            string[] falha_spi = linha.Split(';');      //quebra a linha de acord com o separador ';'
 
-                            string[] comp = falha_aoi[0].Split('_');
+                            string[] comp = falha_spi[0].Split('_');
                             componente = comp[0];                       //atribui a componente o nome do componente que falhou
 
-                            string[] pncomp = falha_aoi[1].Split('#');
+                            string[] pncomp = falha_spi[1].Split('#');
                             pn_componente = pncomp[0];                  //atribui a pn_componente o PartNumber do componente com falha
-                            falha_componente = falha_aoi[2];            //atribui a falha_componente o tipo de falha que a AOI identificou. Ex.: (PRESENCE), (ROTATE), (POLARITY)
-                            usuario_confirmou_falha = falha_aoi[3];     //atribui a usuario_confirmou_falha a avaliação do operador sobre a falha apresentada
+                            falha_componente = falha_spi[2];            //atribui a falha_componente o tipo de falha que a SPI identificou. Ex.: (PRESENCE), (ROTATE), (POLARITY)
+                            usuario_confirmou_falha = falha_spi[3];     //atribui a usuario_confirmou_falha a avaliação do operador sobre a falha apresentada
 
-                            string[] fot = falha_aoi[5].Split('\\');
+                            string[] fot = falha_spi[5].Split('\\');
 
 
-                            string path_temp = falha_aoi[5];
+                            string path_temp = falha_spi[5];
 
                             #region if (File.Exists(path_temp))    
                             if (File.Exists(path_temp))
                             {
-                                if (!Directory.Exists(path + @"AOI_DB\Pictures\" + serial_number + @"\"))
+                                if (!Directory.Exists(path + @"SPI_DB\Pictures\" + serial_number + @"\"))
                                 {
-                                    Directory.CreateDirectory(path + @"AOI_DB\Pictures\" + serial_number + @"\");
+                                    Directory.CreateDirectory(path + @"SPI_DB\Pictures\" + serial_number + @"\");
                                 }
 
                                 try
                                 {
-                                    File.Copy(path_temp, path + @"AOI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + "_" + componente + ".jpg", true);
-                                    path_foto_spi = @"\\10.8.2.73\engl06$\TestTool\AOI_Test\AOI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + "_" + componente + ".jpg";
+                                    File.Copy(path_temp, path + @"SPI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + "_" + componente + ".jpg", true);
+                                    path_foto_spi = @"\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + "_" + componente + ".jpg";
                                 }
                                 catch (Exception)
                                 {
@@ -345,7 +345,7 @@ namespace SPI_ROBOT
                                         System.Threading.Thread.Sleep(2000);  //delay 
 
                                         File.Copy(path_temp, path + @"SPI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + "_" + componente + ".jpg", true);
-                                        path_foto_spi = @"\\10.8.2.73\engl06$\TestTool\AOI_Test\AOI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + "_" + componente + ".jpg";
+                                        path_foto_spi = @"\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + "_" + componente + ".jpg";
                                     }
                                     catch (Exception)
                                     {
@@ -354,8 +354,8 @@ namespace SPI_ROBOT
 
                                         File.Delete(log);
 
-                                        DOS(@"taskkill /IM Tri_Aoi_RS.exe /F");
-                                        DOS(@"taskkill /IM AOI_RUN.exe /F");
+                                        DOS(@"taskkill /IM Tri_spi_RS.exe /F");
+                                        
 
                                         System.Threading.Thread.CurrentThread.Abort();
                                         this.Close();
@@ -376,9 +376,9 @@ namespace SPI_ROBOT
 
                             try
                             {
-                                if (!Directory.Exists(path + @"SPI_DB\Failures\" + linha_SX + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\"))
+                                if (!Directory.Exists(path + @"_DB\Failures\" + linha_SX + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\"))
                                 {
-                                    Directory.CreateDirectory(path + @"SPI?_DB\Failures\" + linha_SX + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\");
+                                    Directory.CreateDirectory(path + @"SPI_DB\Failures\" + linha_SX + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\");
                                 }
                             }
                             catch (Exception)
@@ -395,7 +395,7 @@ namespace SPI_ROBOT
                                 catch (Exception)
                                 {
 
-                                    MessageBox.Show("Line - 860." + "CreateDirectory " + path + "AOI_DB\\Failures\\" + linha_SX + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + hora_criacao.ToString("HH") + "\\" + part_number + "\\", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show("Line - 860." + "CreateDirectory " + path + "SPI_DB\\Failures\\" + linha_SX + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + hora_criacao.ToString("HH") + "\\" + part_number + "\\", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                                     File.Delete(log);
 
@@ -411,7 +411,7 @@ namespace SPI_ROBOT
                             {
                                 if (!File.Exists(path + @"SPI_DB\Failures\" + linha_SX + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\" + serial_number + "_" + part_number + ".log.txt"))
                                 {
-                                    File.WriteAllText(path + @"SPI_DB\Failures\" + linha_SX + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\" + serial_number + "_" + part_number + ".log.txt", "SerialNumber | PartNumber | Linha | Posto | Modelo AOI | Componente | PartNumber Componente | Falha | Usuario falhou(bool) | Path da imagem.jpg" + Environment.NewLine);
+                                    File.WriteAllText(path + @"SPI_DB\Failures\" + linha_SX + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\" + serial_number + "_" + part_number + ".log.txt", "SerialNumber | PartNumber | Linha | Posto | Modelo SPI | Componente | PartNumber Componente | Falha | Usuario falhou(bool) | Path da imagem.jpg" + Environment.NewLine);
                                 }
                             }
                             catch (Exception)
@@ -433,8 +433,8 @@ namespace SPI_ROBOT
 
                                     File.Delete(log);
 
-                                    DOS(@"taskkill /IM Tri_Aoi_RS.exe /F");
-                                    DOS(@"taskkill /IM AOI_RUN.exe /F");
+                                    DOS(@"taskkill /IM Tri_SPI_RS.exe /F");
+                                    DOS(@"taskkill /IM SPI_RUN.exe /F");
 
                                     System.Threading.Thread.CurrentThread.Abort();
                                     this.Close();
@@ -445,7 +445,7 @@ namespace SPI_ROBOT
                             {
                                 if (!File.Exists(path + @"SPI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + ".log.txt"))
                                 {
-                                    File.WriteAllText(path + @"SPI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + ".log.txt", "SerialNumber | PartNumber | Linha | Modelo AOI | Componente | PartNumber Componente | Falha | Usuario falhou(bool) | Path da imagem.jpg" + Environment.NewLine);
+                                    File.WriteAllText(path + @"SPI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + ".log.txt", "SerialNumber | PartNumber | Linha | Modelo SPI | Componente | PartNumber Componente | Falha | Usuario falhou(bool) | Path da imagem.jpg" + Environment.NewLine);
                                 }
                             }
                             catch (Exception)
@@ -456,7 +456,7 @@ namespace SPI_ROBOT
                                 {
                                     if (!File.Exists(path + @"SPI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + ".log.txt"))
                                     {
-                                        File.WriteAllText(path + @"SPI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + ".log.txt", "SerialNumber | PartNumber | Linha | Modelo AOI | Componente | PartNumber Componente | Falha | Usuario falhou(bool) | Path da imagem.jpg" + Environment.NewLine);
+                                        File.WriteAllText(path + @"SPI_DB\Pictures\" + serial_number + @"\" + serial_number + "_" + part_number + ".log.txt", "SerialNumber | PartNumber | Linha | Modelo SPI | Componente | PartNumber Componente | Falha | Usuario falhou(bool) | Path da imagem.jpg" + Environment.NewLine);
                                     }
                                 }
                                 catch (Exception)
@@ -466,8 +466,8 @@ namespace SPI_ROBOT
 
                                     File.Delete(log);
 
-                                    DOS(@"taskkill /IM Tri_Aoi_RS.exe /F");
-                                    DOS(@"taskkill /IM AOI_RUN.exe /F");
+                                    DOS(@"taskkill /IM Tri_spi_RS.exe /F");
+                                    DOS(@"taskkill /IM spi_RUN.exe /F");
 
                                     System.Threading.Thread.CurrentThread.Abort();
                                     this.Close();
@@ -527,8 +527,8 @@ namespace SPI_ROBOT
 
                                     File.Delete(log);
 
-                                    DOS(@"taskkill /IM Tri_Aoi_RS.exe /F");
-                                    DOS(@"taskkill /IM AOI_RUN.exe /F");
+                                    DOS(@"taskkill /IM Tri_spi_RS.exe /F");
+                                    DOS(@"taskkill /IM spi_RUN.exe /F");
 
                                     System.Threading.Thread.CurrentThread.Abort();
                                     this.Close();
@@ -542,7 +542,7 @@ namespace SPI_ROBOT
 
                     #endregion
 
-                    falhas_spi = Convert.ToString(falhas_maquina);      //atribui a falhas_aoi o número total de falhas que a máquina indicou
+                    falhas_spi = Convert.ToString(falhas_maquina);      //atribui a falhas_spi o número total de falhas que a máquina indicou
                     falhas_operador = Convert.ToString(falha_op);       //atribui a falhas_operador o número total de falhas que o operador confirmou
 
                     /*--- ------------------------------------------------------------------------------------------------------- ---*/
@@ -610,8 +610,8 @@ namespace SPI_ROBOT
 
                             File.Delete(log);
 
-                            DOS(@"taskkill /IM Tri_Aoi_RS.exe /F");
-                            DOS(@"taskkill /IM AOI_RUN.exe /F");
+                            DOS(@"taskkill /IM Tri_spi_RS.exe /F");
+                           
 
                             System.Threading.Thread.CurrentThread.Abort();
                             this.Close();
@@ -676,8 +676,8 @@ namespace SPI_ROBOT
                                 {
                                     string[] path_quebrado = path_Arquivo1.Split('\\');
 
-                                    string diretorio_teorico = @"\\10.8.2.73\engl06$\TestTool\AOI_Test\AOI_DB\Failures\" + path_quebrado[4] + @"\" + path_quebrado[5] + @"\" + path_quebrado[6] + @"\" + path_quebrado[7] + @"\" + path_quebrado[8] + @"\";
-                                    string arquivo_teorico = @"\\10.8.2.73\engl06$\TestTool\AOI_Test\AOI_DB\Failures\" + path_quebrado[4] + @"\" + path_quebrado[5] + @"\" + path_quebrado[6] + @"\" + path_quebrado[7] + @"\" + path_quebrado[8] + @"\" + path_quebrado[9];
+                                    string diretorio_teorico = @"\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\Failures\" + path_quebrado[4] + @"\" + path_quebrado[5] + @"\" + path_quebrado[6] + @"\" + path_quebrado[7] + @"\" + path_quebrado[8] + @"\";
+                                    string arquivo_teorico = @"\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\Failures\" + path_quebrado[4] + @"\" + path_quebrado[5] + @"\" + path_quebrado[6] + @"\" + path_quebrado[7] + @"\" + path_quebrado[8] + @"\" + path_quebrado[9];
 
                                     if (File.Exists(arquivo_teorico))
                                     {
@@ -723,8 +723,8 @@ namespace SPI_ROBOT
                 {
                     string[] path_quebrado = path_Arquivo2.Split('\\');
 
-                    string diretorio_teorico = @"\\10.8.2.73\engl06$\TestTool\AOI_Test\AOI_DB\Pictures\" + path_quebrado[4] + @"\";
-                    string arquivo_teorico = @"\\10.8.2.73\engl06$\TestTool\AOI_Test\AOI_DB\Pictures\" + path_quebrado[4] + @"\" + path_quebrado[5];
+                    string diretorio_teorico = @"\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\Pictures\" + path_quebrado[4] + @"\";
+                    string arquivo_teorico = @"\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\Pictures\" + path_quebrado[4] + @"\" + path_quebrado[5];
 
                     if (File.Exists(arquivo_teorico))
                     {
@@ -749,8 +749,8 @@ namespace SPI_ROBOT
                 {
                     string[] path_quebrado2 = path_Arquivo2.Split('\\');
 
-                    string diretorio_teorico = @"\\10.8.2.73\engl06$\TestTool\AOI_Test\AOI_DB\Pictures\" + path_quebrado2[4] + @"\";
-                    string arquivo_teorico = @"\\10.8.2.73\engl06$\TestTool\AOI_Test\AOI_DB\Pictures\" + path_quebrado2[4] + @"\" + path_quebrado2[5];
+                    string diretorio_teorico = @"\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\Pictures\" + path_quebrado2[4] + @"\";
+                    string arquivo_teorico = @"\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\Pictures\" + path_quebrado2[4] + @"\" + path_quebrado2[5];
 
                     if (!Directory.Exists(diretorio_teorico)) Directory.CreateDirectory(diretorio_teorico);
                     File.Copy(path_Arquivo2, arquivo_teorico, true);
@@ -782,8 +782,8 @@ namespace SPI_ROBOT
                         {
                             string[] path_quebrado = arquivo_Statistic.Split('\\');
 
-                            string diretorio_teorico = @"\\10.8.2.73\engl06$\TestTool\AOI_Test\AOI_DB\Statistic\" + path_quebrado[4] + @"\" + path_quebrado[5] + @"\" + path_quebrado[6] + @"\";
-                            string arquivo_teorico = @"\\10.8.2.73\engl06$\TestTool\AOI_Test\AOI_DB\Statistic\" + path_quebrado[4] + @"\" + path_quebrado[5] + @"\" + path_quebrado[6] + @"\" + path_quebrado[7];
+                            string diretorio_teorico = @"\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\Statistic\" + path_quebrado[4] + @"\" + path_quebrado[5] + @"\" + path_quebrado[6] + @"\";
+                            string arquivo_teorico = @"\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\Statistic\" + path_quebrado[4] + @"\" + path_quebrado[5] + @"\" + path_quebrado[6] + @"\" + path_quebrado[7];
 
                             if (File.Exists(arquivo_teorico))
                             {
