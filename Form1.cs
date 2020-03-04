@@ -98,7 +98,7 @@ namespace SPI_ROBOT
             conectado = false;
             try
             {
-                if (Directory.Exists(@"C:\EngTest\logs"))
+                if (Directory.Exists(@"C:\EngTeste\logs"))
                 {
                     conectado = true;
                     
@@ -127,36 +127,32 @@ namespace SPI_ROBOT
             catch (Exception)
             {
 
+             }
 
+            /*************************************************************************************************************************/
+            /*--- Método para abrir o prompt e inserir comandos ---*/
+            public void DOS(string command)
+            {
+                Process process = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.UseShellExecute = false;
+                startInfo.CreateNoWindow = true;
+                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                startInfo.FileName = "cmd.exe";
+                startInfo.Arguments = "/c " + command;
+                startInfo.RedirectStandardOutput = true;
+                process.StartInfo = startInfo;
+                process.Start();
+                process.WaitForExit();
             }
-        
-        }
-
-
-         /*************************************************************************************************************************/
-        /*--- Método para abrir o prompt e inserir comandos ---*/
-        public void DOS(string command)
-        {
-            Process process = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.UseShellExecute = false;
-            startInfo.CreateNoWindow = true;
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/c " + command;
-            startInfo.RedirectStandardOutput = true;
-            process.StartInfo = startInfo;
-            process.Start();
-            process.WaitForExit();
-        }
        /*************************************************************************************************************************/
-        
+
         internal struct INPUT
         {
             public UInt32 Type;
             public MOUSEKEYBDHARDWAREINPUT Data;
         }
-       
+
         /*************************************************************************************************************************/
 
         [StructLayout(LayoutKind.Explicit)]
@@ -176,7 +172,7 @@ namespace SPI_ROBOT
             public UInt32 Time;
             public IntPtr ExtraInfo;
         }
-     
+
 
         /*************************************************************************************************************************/
         /*---  ---*/
@@ -256,7 +252,7 @@ namespace SPI_ROBOT
                 /*--- ----------------------------------------------------------------------------------------------------------- ---*/
 
                 /*--- Tratamento dos Logs ---*/
-                
+
                 int separadores_total = File.ReadLines("separadores_log.ini").Count();                      //atribui a separadores_total a quantidade de separadores que existe no log da SPI
                 #region for (int a = 0; a < separadores_total; a++)                                         //realiza um loop para cada log de placa dentro do arquivo .txt
                 for (int a = 0; a < separadores_total; a++)                                                //realiza um loop para cada log de placa dentro do arquivo .txt
@@ -355,7 +351,7 @@ namespace SPI_ROBOT
                                         File.Delete(log);
 
                                         DOS(@"taskkill /IM Tri_spi_RS.exe /F");
-                                        
+
 
                                         System.Threading.Thread.CurrentThread.Abort();
                                         this.Close();
@@ -611,7 +607,7 @@ namespace SPI_ROBOT
                             File.Delete(log);
 
                             DOS(@"taskkill /IM Tri_spi_RS.exe /F");
-                           
+
 
                             System.Threading.Thread.CurrentThread.Abort();
                             this.Close();
@@ -813,10 +809,10 @@ namespace SPI_ROBOT
 
             /*--- --------------------------------------------------------------------------------------------------------- ---*/
         }
-      
+
         /*************************************************************************************************************************/
-       
-            /*--- Fechar a aplicação ---*/
+
+        /*--- Fechar a aplicação ---*/
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
 
@@ -841,4 +837,14 @@ namespace SPI_ROBOT
 
         /*************************************************************************************************************************/
     }
-}
+}        
+
+
+
+
+
+
+
+
+
+       
