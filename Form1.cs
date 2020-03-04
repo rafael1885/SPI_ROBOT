@@ -52,7 +52,7 @@ namespace SPI_ROBOT
 
         private string serial_number; public string Serial_Number { get { return serial_number; } set { serial_number = value; } } //registra o SerialNumber da placa
 
-        private string modelo_spi; public string Modelo_spi { get { return modelo_spi; } set { modelo_spi = value; } }          //registra o modelo da SPI 
+        private string modelo_spi; public string Modelo_spi { get { return modelo_spi; } set { modelo_spi = value; } }          //registra o modelo da AOI 
 
         private string componentes_testados_spi; public string Componentes_Testados_SPI { get { return componentes_testados_spi; } set { componentes_testados_spi = value; } }
 
@@ -98,7 +98,7 @@ namespace SPI_ROBOT
             conectado = false;
             try
             {
-                if (Directory.Exists(@"C:\EngTeste\logs"))
+                if (Directory.Exists(@"C:\EngTest\logs"))
                 {
                     conectado = true;
                     
@@ -127,32 +127,36 @@ namespace SPI_ROBOT
             catch (Exception)
             {
 
-             }
 
-            /*************************************************************************************************************************/
-            /*--- Método para abrir o prompt e inserir comandos ---*/
-            public void DOS(string command)
-            {
-                Process process = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-                startInfo.UseShellExecute = false;
-                startInfo.CreateNoWindow = true;
-                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.FileName = "cmd.exe";
-                startInfo.Arguments = "/c " + command;
-                startInfo.RedirectStandardOutput = true;
-                process.StartInfo = startInfo;
-                process.Start();
-                process.WaitForExit();
             }
-       /*************************************************************************************************************************/
+        
+        }
 
+
+         /*************************************************************************************************************************/
+        /*--- Método para abrir o prompt e inserir comandos ---*/
+        public void DOS(string command)
+        {
+            Process process = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = "/c " + command;
+            startInfo.RedirectStandardOutput = true;
+            process.StartInfo = startInfo;
+            process.Start();
+            process.WaitForExit();
+        }
+       /*************************************************************************************************************************/
+        
         internal struct INPUT
         {
             public UInt32 Type;
             public MOUSEKEYBDHARDWAREINPUT Data;
         }
-
+       
         /*************************************************************************************************************************/
 
         [StructLayout(LayoutKind.Explicit)]
@@ -172,7 +176,7 @@ namespace SPI_ROBOT
             public UInt32 Time;
             public IntPtr ExtraInfo;
         }
-
+     
 
         /*************************************************************************************************************************/
         /*---  ---*/
@@ -252,7 +256,7 @@ namespace SPI_ROBOT
                 /*--- ----------------------------------------------------------------------------------------------------------- ---*/
 
                 /*--- Tratamento dos Logs ---*/
-
+                
                 int separadores_total = File.ReadLines("separadores_log.ini").Count();                      //atribui a separadores_total a quantidade de separadores que existe no log da SPI
                 #region for (int a = 0; a < separadores_total; a++)                                         //realiza um loop para cada log de placa dentro do arquivo .txt
                 for (int a = 0; a < separadores_total; a++)                                                //realiza um loop para cada log de placa dentro do arquivo .txt
@@ -351,7 +355,7 @@ namespace SPI_ROBOT
                                         File.Delete(log);
 
                                         DOS(@"taskkill /IM Tri_spi_RS.exe /F");
-
+                                        DOS(@"taskkill /IM spi_RUN.exe /F");
 
                                         System.Threading.Thread.CurrentThread.Abort();
                                         this.Close();
@@ -374,7 +378,7 @@ namespace SPI_ROBOT
                             {
                                 if (!Directory.Exists(path + @"_DB\Failures\" + linha_SX + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\"))
                                 {
-                                    Directory.CreateDirectory(path + @"SPI_DB\Failures\" + linha_SX + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\");
+                                    Directory.CreateDirectory(path + @"AOI_DB\Failures\" + linha_SX + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\");
                                 }
                             }
                             catch (Exception)
@@ -607,7 +611,7 @@ namespace SPI_ROBOT
                             File.Delete(log);
 
                             DOS(@"taskkill /IM Tri_spi_RS.exe /F");
-
+                           
 
                             System.Threading.Thread.CurrentThread.Abort();
                             this.Close();
@@ -809,10 +813,10 @@ namespace SPI_ROBOT
 
             /*--- --------------------------------------------------------------------------------------------------------- ---*/
         }
-
+      
         /*************************************************************************************************************************/
-
-        /*--- Fechar a aplicação ---*/
+       
+            /*--- Fechar a aplicação ---*/
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
 
@@ -837,14 +841,4 @@ namespace SPI_ROBOT
 
         /*************************************************************************************************************************/
     }
-}        
-
-
-
-
-
-
-
-
-
-       
+}
