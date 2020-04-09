@@ -72,10 +72,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>7B91B594678634C3C12DC6BC706F8F59D3825B5E</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>1091DA1D30308A9D9324A36C0409B299F5BA447B</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>SPI_ROBOT_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>SPI_ROBOT_2_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -162,6 +162,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="SPI_ROBOT_2_TemporaryKey.pfx" />
     <None Include="SPI_ROBOT_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
