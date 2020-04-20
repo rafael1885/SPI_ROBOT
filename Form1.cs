@@ -15,7 +15,7 @@ namespace SPI_ROBOT
         public Form1()                                  //inicialização do programa
         {
             InitializeComponent();
-            modo_operacao = false;
+          
             timeX = new Timer() { Interval = 1000 };     //instancia a classe Timer e seta o parametro Interval com 1s
 
 
@@ -44,9 +44,7 @@ namespace SPI_ROBOT
 
         private bool form_fechado; public bool Form_fechado { get { return form_fechado; } set { form_fechado = value; } }
 
-        private bool modo_operacao; public bool Modo_Operacao { get { return modo_operacao; } set { modo_operacao = value; } }
-
-        private string path; public string Path { get { return path; } set { path = value; } }                                  //aponta par o diretório principal
+           private string path; public string Path { get { return path; } set { path = value; } }                                  //aponta par o diretório principal
 
         private string part_number; public string Part_Number { get { return part_number; } set { part_number = value; } }      //registra o PartNumber da placa
 
@@ -57,10 +55,6 @@ namespace SPI_ROBOT
         private string componentes_testados_spi; public string Componentes_Testados_SPI { get { return componentes_testados_spi; } set { componentes_testados_spi = value; } }
 
         private string falhas_spi; public string Falhas_SPI { get { return falhas_spi; } set { falhas_spi = value; } }
-
-        private string falhas_operador; public string Falhas_Operador { get { return falhas_operador; } set { falhas_operador = value; } }
-
-        private string placa_lavada; public string Placa_lavada { get { return placa_lavada; } set { placa_lavada = value; } }
 
         private string pad; public string PAD { get { return pad; } set { pad = value; } }
 
@@ -91,7 +85,7 @@ namespace SPI_ROBOT
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        private string path_local = @"C:\EngTeste\";
+        
 
         string logpath = @"C:\Users\rafaelpin\Desktop\spi-sfc";            //aponta para o diretório onde são gerados os logs do teste da AIO
 
@@ -113,7 +107,7 @@ namespace SPI_ROBOT
 
                     if (File.Exists("operação.dll")) File.Delete("operação.dll");
                     File.WriteAllText("operacao.dll", "modo online" + Environment.NewLine);
-                    path = @"C:\EngTeste";
+                    path = @"C:\EngTeste\";
                     lb_on_off.Font = new Font("Arial Black", 50);
                     lb_on_off.ForeColor = System.Drawing.Color.Green;
                     lb_on_off.Text = "ON";
@@ -123,7 +117,7 @@ namespace SPI_ROBOT
                     conectado = false;
                     if (File.Exists("operacao.dll")) File.Delete("operacao.dll"); //deleta o arquivo operacao.dll
                     File.WriteAllText("operacao.dll", "modo offline" + Environment.NewLine);
-                    path = @"C:\EngTeste";
+                    path = @"C:\EngTeste\";
                     lb_on_off.Font = new Font("Arial", 50);
                     lb_on_off.Text = "OFF";
                     lb_on_off.BackColor = lb_on_off.ForeColor = System.Drawing.Color.Black;
@@ -198,7 +192,7 @@ namespace SPI_ROBOT
 
                 /*--- Extração das informações de cada log contido no arquivo ---*/
 
-                int falhas_op = 0;
+               
                 int falhas_maquina = 0;
 
                 /*--- Realiza a leitura do cabeçalho do Log ---*/
@@ -215,19 +209,18 @@ namespace SPI_ROBOT
                         linha_spi = ls[2];
 
                     }
-                    if (part_number.Contains(";"))
-
                     part_number = File.ReadLines(log).Skip(i).Take(1).First();
                     if (part_number.Contains("%"))
                     {
-                        string[] pn = part_number.Split(';');
+                        string[] pn = part_number.Split('%');
                         part_number = pn[0];
 
                     }
                     serial_number = File.ReadLines(log).Skip(0).Take(1).First();
                     if ((serial_number.Contains("SN")) || (serial_number.Contains(":"))) /* Verifica serial da placa */
                     {
-
+                        string[] sn = serial_number.Split(':');
+                        serial_number = sn[1];
                     }
 
                     else
@@ -236,34 +229,35 @@ namespace SPI_ROBOT
 
                     }
 
-
                         painel_placa = File.ReadLines(log).Skip(i).Take(1).First(); /* verifica numero referencia do painel da placa */
                         string[] sp = painel_placa.Split(';');
                         painel_placa = sp[4];
-                    
 
-                   #endregion
+
+                    #endregion
                     /*--- Captura as informações das falhas presentes no Log ---*/
-                   
-                    #region if ( linha.Contains("PAD")
-                  
-                    numero_pad = File.ReadLines(log).Skip(i).Take(2).First();     /* verifica se placa numero do pad */
-                        {
 
-                        if ((numero_pad.Contains(";")))
+                    #region if ( linha.Contains("PAD")
+                    
+                    
+                        numero_pad = File.ReadLines(log).Skip(i).Take(2).First();     /* verifica  numero do pad */
+                        if ((numero_pad.Contains("_")))
 
                         {
                             numero_pad = File.ReadLines(log).Skip(i).First();
                             string[] np = numero_pad.Split(';');
                             numero_pad = np[6];
-
-
                         }
-                        placa_rpass = File.ReadLines(log).Skip(i).Take(1).First();
+                        else
+                        {
+                            numero_pad = "0";
+                        }
+                       
+                        placa_rpass = File.ReadLines(log).Skip(i).Take(1).First();  // numero de placa rpass//
                         if ((placa_rpass.Contains("Rpass")))
                         {
 
-                            placa_rpass = File.ReadLines(log).Skip(i).First();  // numero de placa rpass//
+                            placa_rpass = File.ReadLines(log).Skip(i).First(); 
                             string[] rpass = placa_rpass.Split(';');
                             placa_rpass = rpass[5];
                         }
@@ -273,21 +267,21 @@ namespace SPI_ROBOT
                         }
 
                         placa_repair = File.ReadLines(log).Skip(i).Take(1).First(); // numero de placa repair//
-                        string[] repair = placa_rpass.Split(';');
-                        if ((placa_rpass.Contains("repair")))
+                        if ((placa_repair.Contains("Repair")))
+                       
                         {
-
-                            placa_repair = File.ReadLines(log).Skip(i).First();  
-                            placa_rpass = repair[4];
-                        }
-                        else
+                        placa_repair = File.ReadLines(log).Skip(i).First();
+                        string[] repair = placa_repair.Split(';');
+                        placa_repair = repair[5];
+                    
+                       }
+                       
+                    else
+                      
                         {
                             placa_repair = "0";
                         }
-
-
-
-                    }
+                    
                     placa_pass = File.ReadLines(log).Skip(i).Take(1).First();
                     if ((placa_pass.Contains("Pass")))
                     {
@@ -302,14 +296,14 @@ namespace SPI_ROBOT
 
 
                 
-            }
+           
             /*--- Se não existir o arquivo de log para a SkyNet cria-o inserindo um cabeçalho na primeira linha---*/
 
             try
             {
-                if (!Directory.Exists(path + @"_DB\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\"))
+                if (!Directory.Exists(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") +  @"\" ))
                 {
-                    Directory.CreateDirectory(path + @"SPI_DB\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\");
+                    Directory.CreateDirectory(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" );
                 }
             }
             catch (Exception)
@@ -318,20 +312,17 @@ namespace SPI_ROBOT
 
                 try
                 {
-                    if (!Directory.Exists(path + @"SPI_DB\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\"))
+                    if (!Directory.Exists(path + @"SPI_DB\Failures\" + linha_spi + @"\"  + serial_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\"  + part_number + @"\"))
                     {
-                        Directory.CreateDirectory(path + @"SPI_DB\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\");
+                        Directory.CreateDirectory(path + @"SPI_DB\Failures\" + linha_spi + @"\" + serial_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + part_number + @"\");
                     }
                 }
                 catch (Exception)
                 {
 
-                    MessageBox.Show("Line - 860." + "CreateDirectory " + path + "SPI_DB\\Failures\\" + linha_spi + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + hora_criacao.ToString("HH") + "\\" + part_number + "\\", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Line - 860." + "CreateDirectory " + path + "SPI_DB\\Failures\\" + linha_spi + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + part_number + "\\", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     File.Delete(log);
-
-
-
 
                     System.Threading.Thread.CurrentThread.Abort();
                     this.Close();
@@ -340,9 +331,9 @@ namespace SPI_ROBOT
 
             try
             {
-                if (!File.Exists(path + @"SPI_DB\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\" + serial_number + "_" + part_number + "_" + painel_placa + ".log.txt"))
+                if (!File.Exists(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt"))
                 {
-                    File.WriteAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\" + serial_number + "_" + part_number + "_" + painel_placa + ".log.txt", "SerialNumber| Painel Placa | PartNumber | Linha  | PAD |  Falha | Rpass(bool) | Repair " + Environment.NewLine);
+                    File.WriteAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\"  + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", "SerialNumber| PartNumber | Linha | PainelPlaca | PAD | Rpass | Repair|" + Environment.NewLine);
                 }
             }
             catch (Exception)
@@ -352,9 +343,9 @@ namespace SPI_ROBOT
 
                 try
                 {
-                    if (!File.Exists(path + @"SPI\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\" + serial_number + "_" + part_number + ".log.txt"))
+                    if (!File.Exists(path + @"SPI\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd")  + @"\" + serial_number + ".log.txt"))
                     {
-                        File.WriteAllText(path + @"SPIFailures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\" + serial_number + "_" + part_number + "_" + painel_placa + ".log.txt", "SerialNumber| Painel Placa | PartNumber | Linha  | PAD | Falha | Rpass(bool)" + Environment.NewLine);
+                        File.WriteAllText(path + @"SPI\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") +  @"\" + serial_number + ".log.txt", "SerialNumber| PartNumber | Linha | PainelPlaca | PAD | Rpass | Repair|" + Environment.NewLine);
                     }
                 }
                 catch (Exception)
@@ -362,15 +353,18 @@ namespace SPI_ROBOT
 
                     MessageBox.Show("Line - 894." + "File.WriteAllText " + path + "SPI_DB\\Failures\\" + linha_spi + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + hora_criacao.ToString("HH") + "\\" + part_number + "\\" + serial_number + "_" + part_number + ".log.txt", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                    File.Delete(log);
-                    ;
+                    
+                        File.Delete(log);
+                    
 
                     System.Threading.Thread.CurrentThread.Abort();
                     this.Close();
 
                 }
 
-            }
+                    }
+                
+               
 
             /*--- ------------------------------------------------------------------------------------------------------- ---*/
 
@@ -378,8 +372,8 @@ namespace SPI_ROBOT
             /*--- Alimenta o log da SkyNet ---*/
 
             try
-            {
-                File.AppendAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\" + serial_number + "_" + part_number + ".log.txt", serial_number + "|" + part_number + "|" + linha_spi + "|" + PAD + "|" + Placa_Rpass + "|" + Placa_Repair + "|" + Environment.NewLine);
+             {
+                    File.AppendAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", part_number + "|" + serial_number + "|"+ linha_spi + "|" + painel_placa + "|" + numero_pad + "|" + Placa_Rpass + "|" + Placa_Repair + "|" + Environment.NewLine);
 
             }
             catch (Exception)
@@ -388,7 +382,7 @@ namespace SPI_ROBOT
 
                 try
                 {
-                    File.AppendAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("HH") + @"\" + part_number + @"\" + serial_number + "_" + part_number + ".log.txt", serial_number + "|" + part_number + "|" + linha_spi + "|" + PAD + "|" + Placa_Rpass + "|" + Placa_Repair + "|" + Environment.NewLine);
+                    File.AppendAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + @"\" + ".log.txt", part_number + "|" + serial_number + "|"+ linha_spi + "|" + painel_placa + "|" + numero_pad + "|" + Placa_Rpass + "|" + Placa_Repair + "|"+ Environment.NewLine);
                 }
                 catch (Exception)
                 {
@@ -404,17 +398,16 @@ namespace SPI_ROBOT
             }
 
 
+                
+                /*--- ------------------------------------------------------------------------------------------------------- ---*/
 
-            /*--- ------------------------------------------------------------------------------------------------------- ---*/
-
-            #endregion
+                #endregion
 
 
-            #endregion
+                #endregion
 
-            falhas_spi = Convert.ToString(falhas_maquina);      //atribui a falhas_spi o número total de falhas que a máquina indicou
-            falhas_operador = Convert.ToString(falhas_op);       //atribui a falhas_operador o número total de falhas que o operador confirmou
-
+                falhas_spi = Convert.ToString(placa_repair);      //atribui a falhas_spi o número total de falhas que a máquina indicou
+            
             /*--- ------------------------------------------------------------------------------------------------------- ---*/
 
             if (!Directory.Exists(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\"))
@@ -429,7 +422,7 @@ namespace SPI_ROBOT
             {
                 try
                 {
-                    File.WriteAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt", "PartNumber | SerialNumber | Linha | Data | Hora |  Placa_Repair| Placa_Rpass | Placa_Pass " + Environment.NewLine);
+                    File.WriteAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt", "PartNumber | SerialNumber | Linha | PainelPlaca | Data | Hora |  Placa_Rpass| Placa_Repair | Placa_Pass " + Environment.NewLine);
                 }
                 catch (Exception)
                 {
@@ -437,7 +430,7 @@ namespace SPI_ROBOT
 
                     try
                     {
-                        File.WriteAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt", "PartNumber | SerialNumber | Linha | Data | Hora  | Placa_Repair | Placa_RPass| Placa_Pass " + Environment.NewLine);
+                        File.WriteAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt", "PartNumber | SerialNumber | Linha | PainelPlaca | Data | Hora  | Placa_Rpass | Placa_Repair| Placa_Pass " + Environment.NewLine);
                     }
                     catch (Exception)
                     {
@@ -463,7 +456,7 @@ namespace SPI_ROBOT
 
             try
             {
-                File.AppendAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt", part_number + "|" + serial_number + "|" + linha_spi + "|" + hora_criacao.ToString("yyyy_MM_dd") + "|" + hora_criacao.ToString("HH:mm") + "|" + componentes_testados_spi + "|" + falhas_spi + "|" + falhas_operador + "|" + Environment.NewLine);
+                File.AppendAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt", part_number + "|" + serial_number + "|" + linha_spi + "|" + painel_placa + "|" + hora_criacao.ToString("yyyy_MM_dd") + "|" + hora_criacao.ToString("HH:mm") +  "|" + placa_rpass + "|" + placa_repair + "|" + Placa_pass + Environment.NewLine);
             }
             catch (Exception)
             {
@@ -471,7 +464,7 @@ namespace SPI_ROBOT
 
                 try
                 {
-                    File.AppendAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt", part_number + "|" + serial_number + "|" + linha_spi + "|" + hora_criacao.ToString("yyyy_MM_dd") + "|" + hora_criacao.ToString("HH:mm") + "|" + componentes_testados_spi + "|" + falhas_spi + "|" + falhas_operador + "|" + Environment.NewLine);
+                    File.AppendAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt", part_number + "|" + serial_number + "|" + linha_spi + "|" + painel_placa + "|" + hora_criacao.ToString("yyyy_MM_dd") + "|" + hora_criacao.ToString("HH:mm") + "|" + placa_rpass + "|" + placa_repair + "|" + placa_pass + Environment.NewLine);
                 }
                 catch (Exception)
                 {
@@ -487,20 +480,19 @@ namespace SPI_ROBOT
                     this.Close();
                 }
             }
-
-            /*--- ------------------------------------------------------------------------------------------------------- ---*/
-
-
-
-            /*--- ----------------------------------------------------------------------------------------------------------- ---*/
+                }
+                /*--- ------------------------------------------------------------------------------------------------------- ---*/
 
 
-            File.Delete(log);
+
+
+
+
+                File.Delete(log);
         }
 
 
-        /*------ ----------------------------------------------------------------------------------------------------------- ---*/
-
+     
 
     }
 
