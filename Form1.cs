@@ -118,9 +118,9 @@ namespace SPI_ROBOT
                     if (File.Exists("operacao.dll")) File.Delete("operacao.dll"); //deleta o arquivo operacao.dll
                     File.WriteAllText("operacao.dll", "modo offline" + Environment.NewLine);
                     path = @"C:\EngTeste\";
-                    lb_on_off.Font = new Font("Arial", 50);
+                    lb_on_off.Font = new Font("Arial Black", 50);
                     lb_on_off.Text = "OFF";
-                    lb_on_off.BackColor = lb_on_off.ForeColor = System.Drawing.Color.Black;
+                    lb_on_off.BackColor = lb_on_off.ForeColor = System.Drawing.Color.Transparent;
                     lb_on_off.ForeColor = System.Drawing.Color.Red;
                     MessageBox.Show("Operando Off-line, Informe ao time de suporte", "ALERTA!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
