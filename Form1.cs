@@ -333,7 +333,7 @@ namespace SPI_ROBOT
             {
                 if (!File.Exists(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt"))
                 {
-                    File.WriteAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\"  + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", "SerialNumber| PartNumber | Linha | PainelPlaca | PAD | Rpass | Repair|" + Environment.NewLine);
+                    File.WriteAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\"  + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", "PartNumber | SerialNumber| Linha | PainelPlaca | PAD | Rpass | Repair|" + Environment.NewLine);
                 }
             }
             catch (Exception)
@@ -345,7 +345,7 @@ namespace SPI_ROBOT
                 {
                     if (!File.Exists(path + @"SPI\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd")  + @"\" + serial_number + ".log.txt"))
                     {
-                        File.WriteAllText(path + @"SPI\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") +  @"\" + serial_number + ".log.txt", "SerialNumber| PartNumber | Linha | PainelPlaca | PAD | Rpass | Repair|" + Environment.NewLine);
+                        File.WriteAllText(path + @"SPI\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") +  @"\" + serial_number + ".log.txt", "PartNumber| SerialNumber | Linha | PainelPlaca | PAD | Rpass | Repair|" + Environment.NewLine);
                     }
                 }
                 catch (Exception)
@@ -418,11 +418,11 @@ namespace SPI_ROBOT
 
             /*--- Se não existir o arquivo de log para a SkyNet cria-o inserindo um cabeçalho na primeira linha---*/
 
-            if (!File.Exists(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt"))
+            if (!File.Exists(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt"))
             {
                 try
                 {
-                    File.WriteAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt", "PartNumber | SerialNumber | Linha | PainelPlaca | Data | Hora |  Placa_Rpass| Placa_Repair | Placa_Pass " + Environment.NewLine);
+                    File.WriteAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", "PartNumber | SerialNumber | Linha | PainelPlaca | Data | Hora |  Placa_Rpass| Placa_Repair | Placa_Pass " + Environment.NewLine);
                 }
                 catch (Exception)
                 {
@@ -430,7 +430,7 @@ namespace SPI_ROBOT
 
                     try
                     {
-                        File.WriteAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt", "PartNumber | SerialNumber | Linha | PainelPlaca | Data | Hora  | Placa_Rpass | Placa_Repair| Placa_Pass " + Environment.NewLine);
+                        File.WriteAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", "PartNumber | SerialNumber | Linha | PainelPlaca | Data | Hora  | Placa_Rpass | Placa_Repair| Placa_Pass " + Environment.NewLine);
                     }
                     catch (Exception)
                     {
@@ -456,7 +456,7 @@ namespace SPI_ROBOT
 
             try
             {
-                File.AppendAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt", part_number + "|" + serial_number + "|" + linha_spi + "|" + painel_placa + "|" + hora_criacao.ToString("yyyy_MM_dd") + "|" + hora_criacao.ToString("HH:mm") +  "|" + placa_rpass + "|" + placa_repair + "|" + Placa_pass + Environment.NewLine);
+                File.AppendAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", part_number + "|" + serial_number + "|" + linha_spi + "|" + painel_placa + "|" + hora_criacao.ToString("yyyy_MM_dd") + "|" + hora_criacao.ToString("HH:mm") +  "|" + placa_rpass + "|" + placa_repair + "|" + Placa_pass + Environment.NewLine);
             }
             catch (Exception)
             {
@@ -464,7 +464,7 @@ namespace SPI_ROBOT
 
                 try
                 {
-                    File.AppendAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + hora_criacao.ToString("yyyy_MM_dd") + ".log.txt", part_number + "|" + serial_number + "|" + linha_spi + "|" + painel_placa + "|" + hora_criacao.ToString("yyyy_MM_dd") + "|" + hora_criacao.ToString("HH:mm") + "|" + placa_rpass + "|" + placa_repair + "|" + placa_pass + Environment.NewLine);
+                    File.AppendAllText(path + @"SPI_DB\Statistic\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", part_number + "|" + serial_number + "|" + linha_spi + "|" + painel_placa + "|" + hora_criacao.ToString("yyyy_MM_dd") + "|" + hora_criacao.ToString("HH:mm") + "|" + placa_rpass + "|" + placa_repair + "|" + placa_pass + Environment.NewLine);
                 }
                 catch (Exception)
                 {
@@ -565,14 +565,8 @@ namespace SPI_ROBOT
 
         /*--- --------------------------------------------------------------------------------------------------------- ---*/
 
-
-
-
-
-
-
         /*--- Copia os arquivos da pasta local Statistic para a rede ---*/
-        string[] pasta_Statistic = Directory.GetDirectories(@"C:\EngTeste\SPI_DB\Statistic\");
+    string[] pasta_Statistic = Directory.GetDirectories(@"C:\EngTeste\SPI_DB\Statistic\");
 
         #region foreach ( var caminho1 in pasta_Statistic )
 

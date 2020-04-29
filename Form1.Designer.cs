@@ -54,7 +54,7 @@
             this.lb_on_off.BackColor = System.Drawing.Color.Transparent;
             this.lb_on_off.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.lb_on_off.ForeColor = System.Drawing.Color.Transparent;
-            this.lb_on_off.Location = new System.Drawing.Point(188, 149);
+            this.lb_on_off.Location = new System.Drawing.Point(172, 102);
             this.lb_on_off.Name = "lb_on_off";
             this.lb_on_off.Size = new System.Drawing.Size(226, 82);
             this.lb_on_off.TabIndex = 99;
