@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Data.SQLite;
+using System.Data;
 
 namespace SPI_ROBOT
 {
@@ -363,39 +365,73 @@ namespace SPI_ROBOT
                 }
 
                     }
-                
+
+
+
+                    /*---------------------------------------------------------------------------------------------------------- ---*/
+                    /*--------------------------------------------------------------- Conexão com BD---------------------------------------------------*/
+
+                    // criar a base de dados
+
+                    //  SQLiteConnection.CreateFile(@"C:\Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db");
+
+                    /*-------------------estabelecer ligação com a base de dados--------------------------------------------------------*/
+                    
+                        SQLiteConnection ligacao = new SQLiteConnection();
+                        ligacao.ConnectionString = @"Data Source = C: \Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db; Version=3;";
+                        ligacao.Open();
+
+                        // criar Tabela na base de dados******************************************
+
+                        string query = "CREATE TABLE statistic" +
+                                       "(" +
+                                       "Part_number                      int, " +
+                                       "Serial_number                    varchar(50)" +
+                                       ")";
+                        SQLiteCommand comando = new SQLiteCommand(query, ligacao);
+                        comando.ExecuteNonQuery();
+
+                    // gravar dado registro na base de dados
+
+
+
                
-
-            /*--- ------------------------------------------------------------------------------------------------------- ---*/
-
-
-            /*--- Alimenta o log da SkyNet ---*/
-
-            try
-             {
-                    File.AppendAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", part_number + "|" + serial_number + "|"+ linha_spi + "|" + painel_placa + "|" + numero_pad + "|" + Placa_Rpass + "|" + Placa_Repair + "|" + Environment.NewLine);
-
-            }
-            catch (Exception)
-            {
-                System.Threading.Thread.Sleep(2000);  //delay
-
-                try
-                {
-                    File.AppendAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + @"\" + ".log.txt", part_number + "|" + serial_number + "|"+ linha_spi + "|" + painel_placa + "|" + numero_pad + "|" + Placa_Rpass + "|" + Placa_Repair + "|"+ Environment.NewLine);
-                }
-                catch (Exception)
-                {
-
-                    MessageBox.Show("Line - 961." + "File.AppendAllText " + path + "SPI_DB\\Failures\\" + linha_spi + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + hora_criacao.ToString("HH") + "\\" + part_number + "\\" + serial_number + "_" + part_number + ".log.txt", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    File.Delete(log);
+            
 
 
-                    System.Threading.Thread.CurrentThread.Abort();
-                    this.Close();
-                }
-            }
+
+
+
+
+
+
+                    /*--- Alimenta o log da SkyNet ---*/
+
+                    try
+                    {
+                            File.AppendAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", part_number + "|" + serial_number + "|" + linha_spi + "|" + painel_placa + "|" + numero_pad + "|" + Placa_Rpass + "|" + Placa_Repair + "|" + Environment.NewLine);
+
+                        }
+                        catch (Exception)
+                        {
+                            System.Threading.Thread.Sleep(2000);  //delay
+
+                            try
+                            {
+                                File.AppendAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + @"\" + ".log.txt", part_number + "|" + serial_number + "|" + linha_spi + "|" + painel_placa + "|" + numero_pad + "|" + Placa_Rpass + "|" + Placa_Repair + "|" + Environment.NewLine);
+                            }
+                            catch (Exception)
+                            {
+
+                                MessageBox.Show("Line - 961." + "File.AppendAllText " + path + "SPI_DB\\Failures\\" + linha_spi + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + hora_criacao.ToString("HH") + "\\" + part_number + "\\" + serial_number + "_" + part_number + ".log.txt", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                                File.Delete(log);
+
+
+                                System.Threading.Thread.CurrentThread.Abort();
+                                this.Close();
+                            }
+                        }
 
 
                 
@@ -448,8 +484,13 @@ namespace SPI_ROBOT
                 }
 
             }
-
-            /*--- ------------------------------------------------------------------------------------------------------- ---*/
+                   
+                    
+                    
+                    
+                    
+                    
+          /*---- ------------------------------------------------------------------------------------------------------- ---*/
 
             System.Diagnostics.Process.GetCurrentProcess().Close();
             /*--- Alimenta o log da SkyNet ---*/
@@ -496,7 +537,7 @@ namespace SPI_ROBOT
 
     }
 
-    /*************************************************************************************************************************/
+  
 
 
     /*************************************************************************************************************************/
