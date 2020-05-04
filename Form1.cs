@@ -17,7 +17,7 @@ namespace SPI_ROBOT
         public Form1()                                  //inicialização do programa
         {
             InitializeComponent();
-          
+
             timeX = new Timer() { Interval = 1000 };     //instancia a classe Timer e seta o parametro Interval com 1s
 
 
@@ -46,7 +46,7 @@ namespace SPI_ROBOT
 
         private bool form_fechado; public bool Form_fechado { get { return form_fechado; } set { form_fechado = value; } }
 
-           private string path; public string Path { get { return path; } set { path = value; } }                                  //aponta par o diretório principal
+        private string path; public string Path { get { return path; } set { path = value; } }                                  //aponta par o diretório principal
 
         private string part_number; public string Part_Number { get { return part_number; } set { part_number = value; } }      //registra o PartNumber da placa
 
@@ -87,7 +87,7 @@ namespace SPI_ROBOT
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        
+
 
         string logpath = @"C:\Users\rafaelpin\Desktop\spi-sfc";            //aponta para o diretório onde são gerados os logs do teste da AIO
 
@@ -194,14 +194,14 @@ namespace SPI_ROBOT
 
                 /*--- Extração das informações de cada log contido no arquivo ---*/
 
-               
+
                 int falhas_maquina = 0;
 
                 /*--- Realiza a leitura do cabeçalho do Log ---*/
                 #region
 
-                int numero_linhas = File.ReadLines(log).Count(); 
-               
+                int numero_linhas = File.ReadLines(log).Count();
+
                 for (int i = 1; i < numero_linhas; i++)  /* faz leitura das linhas do log */
                 {
                     linha_spi = File.ReadLines(log).Skip(i).Take(1).First();   // verifica a linha da placa
@@ -231,59 +231,59 @@ namespace SPI_ROBOT
 
                     }
 
-                        painel_placa = File.ReadLines(log).Skip(i).Take(1).First(); /* verifica numero referencia do painel da placa */
-                        string[] sp = painel_placa.Split(';');
-                        painel_placa = sp[4];
+                    painel_placa = File.ReadLines(log).Skip(i).Take(1).First(); /* verifica numero referencia do painel da placa */
+                    string[] sp = painel_placa.Split(';');
+                    painel_placa = sp[4];
 
 
                     #endregion
                     /*--- Captura as informações das falhas presentes no Log ---*/
 
                     #region if ( linha.Contains("PAD")
-                    
-                    
-                        numero_pad = File.ReadLines(log).Skip(i).Take(2).First();     /* verifica  numero do pad */
-                        if ((numero_pad.Contains("_")))
 
-                        {
-                            numero_pad = File.ReadLines(log).Skip(i).First();
-                            string[] np = numero_pad.Split(';');
-                            numero_pad = np[6];
-                        }
-                        else
-                        {
-                            numero_pad = "0";
-                        }
-                       
-                        placa_rpass = File.ReadLines(log).Skip(i).Take(1).First();  // numero de placa rpass//
-                        if ((placa_rpass.Contains("Rpass")))
-                        {
 
-                            placa_rpass = File.ReadLines(log).Skip(i).First(); 
-                            string[] rpass = placa_rpass.Split(';');
-                            placa_rpass = rpass[5];
-                        }
-                        else
-                        {
-                            placa_rpass = "0";
-                        }
+                    numero_pad = File.ReadLines(log).Skip(i).Take(2).First();     /* verifica  numero do pad */
+                    if ((numero_pad.Contains("_")))
 
-                        placa_repair = File.ReadLines(log).Skip(i).Take(1).First(); // numero de placa repair//
-                        if ((placa_repair.Contains("Repair")))
-                       
-                        {
+                    {
+                        numero_pad = File.ReadLines(log).Skip(i).First();
+                        string[] np = numero_pad.Split(';');
+                        numero_pad = np[6];
+                    }
+                    else
+                    {
+                        numero_pad = "0";
+                    }
+
+                    placa_rpass = File.ReadLines(log).Skip(i).Take(1).First();  // numero de placa rpass//
+                    if ((placa_rpass.Contains("Rpass")))
+                    {
+
+                        placa_rpass = File.ReadLines(log).Skip(i).First();
+                        string[] rpass = placa_rpass.Split(';');
+                        placa_rpass = rpass[5];
+                    }
+                    else
+                    {
+                        placa_rpass = "0";
+                    }
+
+                    placa_repair = File.ReadLines(log).Skip(i).Take(1).First(); // numero de placa repair//
+                    if ((placa_repair.Contains("Repair")))
+
+                    {
                         placa_repair = File.ReadLines(log).Skip(i).First();
                         string[] repair = placa_repair.Split(';');
                         placa_repair = repair[5];
-                    
-                       }
-                       
+
+                    }
+
                     else
-                      
-                        {
-                            placa_repair = "0";
-                        }
-                    
+
+                    {
+                        placa_repair = "0";
+                    }
+
                     placa_pass = File.ReadLines(log).Skip(i).Take(1).First();
                     if ((placa_pass.Contains("Pass")))
                     {
@@ -297,72 +297,72 @@ namespace SPI_ROBOT
                     }
 
 
-                
-           
-            /*--- Se não existir o arquivo de log para a SkyNet cria-o inserindo um cabeçalho na primeira linha---*/
 
-            try
-            {
-                if (!Directory.Exists(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") +  @"\" ))
-                {
-                    Directory.CreateDirectory(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" );
-                }
-            }
-            catch (Exception)
-            {
-                System.Threading.Thread.Sleep(2000);  //delay
 
-                try
-                {
-                    if (!Directory.Exists(path + @"SPI_DB\Failures\" + linha_spi + @"\"  + serial_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\"  + part_number + @"\"))
+                    /*--- Se não existir o arquivo de log para a SkyNet cria-o inserindo um cabeçalho na primeira linha---*/
+
+                    try
                     {
-                        Directory.CreateDirectory(path + @"SPI_DB\Failures\" + linha_spi + @"\" + serial_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + part_number + @"\");
+                        if (!Directory.Exists(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\"))
+                        {
+                            Directory.CreateDirectory(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\");
+                        }
                     }
-                }
-                catch (Exception)
-                {
-
-                    MessageBox.Show("Line - 860." + "CreateDirectory " + path + "SPI_DB\\Failures\\" + linha_spi + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + part_number + "\\", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    File.Delete(log);
-
-                    System.Threading.Thread.CurrentThread.Abort();
-                    this.Close();
-                }
-            }
-
-            try
-            {
-                if (!File.Exists(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt"))
-                {
-                    File.WriteAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\"  + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", "PartNumber | SerialNumber| Linha | PainelPlaca | PAD | Rpass | Repair|" + Environment.NewLine);
-                }
-            }
-            catch (Exception)
-            {
-
-                System.Threading.Thread.Sleep(2000);  //delay
-
-                try
-                {
-                    if (!File.Exists(path + @"SPI\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd")  + @"\" + serial_number + ".log.txt"))
+                    catch (Exception)
                     {
-                        File.WriteAllText(path + @"SPI\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") +  @"\" + serial_number + ".log.txt", "PartNumber| SerialNumber | Linha | PainelPlaca | PAD | Rpass | Repair|" + Environment.NewLine);
+                        System.Threading.Thread.Sleep(2000);  //delay
+
+                        try
+                        {
+                            if (!Directory.Exists(path + @"SPI_DB\Failures\" + linha_spi + @"\" + serial_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + part_number + @"\"))
+                            {
+                                Directory.CreateDirectory(path + @"SPI_DB\Failures\" + linha_spi + @"\" + serial_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + part_number + @"\");
+                            }
+                        }
+                        catch (Exception)
+                        {
+
+                            MessageBox.Show("Line - 860." + "CreateDirectory " + path + "SPI_DB\\Failures\\" + linha_spi + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + part_number + "\\", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            File.Delete(log);
+
+                            System.Threading.Thread.CurrentThread.Abort();
+                            this.Close();
+                        }
                     }
-                }
-                catch (Exception)
-                {
 
-                    MessageBox.Show("Line - 894." + "File.WriteAllText " + path + "SPI_DB\\Failures\\" + linha_spi + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + hora_criacao.ToString("HH") + "\\" + part_number + "\\" + serial_number + "_" + part_number + ".log.txt", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    try
+                    {
+                        if (!File.Exists(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt"))
+                        {
+                            File.WriteAllText(path + @"SPI_DB\Failures\" + linha_spi + @"\" + part_number + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", "PartNumber | SerialNumber| Linha | PainelPlaca | PAD | Rpass | Repair|" + Environment.NewLine);
+                        }
+                    }
+                    catch (Exception)
+                    {
 
-                    
-                        File.Delete(log);
-                    
+                        System.Threading.Thread.Sleep(2000);  //delay
 
-                    System.Threading.Thread.CurrentThread.Abort();
-                    this.Close();
+                        try
+                        {
+                            if (!File.Exists(path + @"SPI\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt"))
+                            {
+                                File.WriteAllText(path + @"SPI\Failures\" + linha_spi + @"\" + hora_criacao.ToString("yyyy_MM_dd") + @"\" + serial_number + ".log.txt", "PartNumber| SerialNumber | Linha | PainelPlaca | PAD | Rpass | Repair|" + Environment.NewLine);
+                            }
+                        }
+                        catch (Exception)
+                        {
 
-                }
+                            MessageBox.Show("Line - 894." + "File.WriteAllText " + path + "SPI_DB\\Failures\\" + linha_spi + "\\" + hora_criacao.ToString("yyyy_MM_dd") + "\\" + hora_criacao.ToString("HH") + "\\" + part_number + "\\" + serial_number + "_" + part_number + ".log.txt", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+
+                            File.Delete(log);
+
+
+                            System.Threading.Thread.CurrentThread.Abort();
+                            this.Close();
+
+                        }
 
                     }
 
@@ -370,35 +370,62 @@ namespace SPI_ROBOT
 
                     /*---------------------------------------------------------------------------------------------------------- ---*/
                     /*--------------------------------------------------------------- Conexão com BD---------------------------------------------------*/
+                   
+                 
 
-                    // criar a base de dados
+                    {
+                        #region   
+                        if (Directory.Exists(@"C:\Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\")) // verefica local onde esta BD
+                        {
+                            if (File.Exists("spi_robot.db")) File.Delete("spi_robot.db"); // Se ja tem um BD deletar
+                        }
 
-                    //  SQLiteConnection.CreateFile(@"C:\Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db");
+                        try
+                        {
 
-                    /*-------------------estabelecer ligação com a base de dados--------------------------------------------------------*/
+                            //------------------------------------------ criar a base de dados----------------------------------------------------------------------//
+
+                            SQLiteConnection.CreateFile(@"C:\Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db"); // cria um novo BD
+
+                            /*-------------------Estabelecer ligação com a base de dados--------------------------------------------------------*/
+
+                            SQLiteConnection ligacao = new SQLiteConnection();
+                            ligacao.ConnectionString = @"Data Source = C: \Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db; Version=3;";
+                            ligacao.Open();
+
+                            /*----------------------------  criar Tabela na base de dados---------------------------------------------------*/
+
+                            string query = "CREATE TABLE statistic" +
+                                           "(" +
+                                           "Part_number                      int, " +
+                                           "Serial_number                    varchar(50), " +
+                                           "linha                            varchar(5), " +
+                                           "Painel_Placa                     int, " +
+                                           "Data_Hora                        datetime,  " +
+                                           "Placa_RPass                      varchar (10), " +
+                                           "Placa_Repair                     varchar (10), " +
+                                           "PAD                              varchar (10), " +
+                                           "Placa_Pass                       varchar(10) " +
+                                           ")";
+
+                            SQLiteCommand comando = new SQLiteCommand(query, ligacao);
+                            comando.ExecuteNonQuery();
+                        }
+
+                        catch (Exception)
+                        {
+                            MessageBox.Show("Tabela não Criada", "ALERTA!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            System.Threading.Thread.CurrentThread.Abort();
+                            this.Close();
+                        }
+                    }
+                    // Gravar dado registro na base de dados
+                   
                     
-                        SQLiteConnection ligacao = new SQLiteConnection();
-                        ligacao.ConnectionString = @"Data Source = C: \Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db; Version=3;";
-                        ligacao.Open();
-
-                        // criar Tabela na base de dados******************************************
-
-                        string query = "CREATE TABLE statistic" +
-                                       "(" +
-                                       "Part_number                      int, " +
-                                       "Serial_number                    varchar(50)" +
-                                       ")";
-                        SQLiteCommand comando = new SQLiteCommand(query, ligacao);
-                        comando.ExecuteNonQuery();
-
-                    // gravar dado registro na base de dados
-
-
-
-               
-            
-
-
+                   
+                    
+                    #endregion
 
 
 
