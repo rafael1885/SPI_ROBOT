@@ -370,20 +370,21 @@ namespace SPI_ROBOT
 
                     /*---------------------------------------------------------------------------------------------------------- ---*/
                     /*--------------------------------------------------------------- Conexão com BD---------------------------------------------------*/
-                   
-                 
+   #region   
 
-                    {
-                        #region   
+                    
+
                         if (Directory.Exists(@"C:\Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\")) // verefica local onde esta BD
                         {
                             if (File.Exists("spi_robot.db")) File.Delete("spi_robot.db"); // Se ja tem um BD deletar
                         }
 
+                    //------------------------------------------ criar a base de dados----------------------------------------------------------------------//
+
+
+                   
                         try
                         {
-
-                            //------------------------------------------ criar a base de dados----------------------------------------------------------------------//
 
                             SQLiteConnection.CreateFile(@"C:\Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db"); // cria um novo BD
 
@@ -419,9 +420,10 @@ namespace SPI_ROBOT
                             System.Threading.Thread.CurrentThread.Abort();
                             this.Close();
                         }
-                    }
-                    // Gravar dado registro na base de dados
-                   
+
+                    
+                        // Gravar dado registro na base de dados
+                    
                     
                    
                     
