@@ -24,7 +24,7 @@ namespace SPI_ROBOT
   /*************************************************************************************************************************/
     /*---------------- Variáveis do sistema---------------------*/
 
-        #region[Variaveis do Sistema]
+      #region[Variaveis do Sistema]
         [DllImport("User32.dll")]
         static extern int SetForegroundWindow(IntPtr point);
 
@@ -171,7 +171,7 @@ namespace SPI_ROBOT
             #endregion
             /******************************************************************************************************************************/
    /*----------------- Verifica a existencia de um log de teste gerado pela SPI-------------------*/
-            #region
+        #region
             string[] arquivos = Directory.GetFiles(logpath, "*.txt");
             foreach (var log in arquivos)                                                   //este laço será executado para cada um dos arquivos .txt encontrados 
             {   /*** trata um único arquivo ***/
@@ -185,7 +185,7 @@ namespace SPI_ROBOT
    /******************************************************************************************************************************/
 
    /*--------------------------Veririfciar o caminho do arquivo BD---------------------------------------*/
-                #region
+       #region
 
                 try
                 {
@@ -202,7 +202,7 @@ namespace SPI_ROBOT
     /*-----------------------------------------------Criando Tabela BD---------------------------------------------*/
 
    /************************************************************************************************************************************/
-                    #region
+        #region
                     string query = "CREATE TABLE statistic" +
                                    "(" +
                                    "Part_number                      TEXT(50), " +
@@ -231,7 +231,7 @@ namespace SPI_ROBOT
                 }
                 #endregion
    /*-------------------------------- Extração das informações de cada log contido no arquivo -----------------------------*/
-                #region
+        #region
                 int numero_linhas = File.ReadLines(log).Count();
                 for (int i = 1; i < numero_linhas; i++)  // faz leitura das linhas do log 
 
@@ -328,7 +328,7 @@ namespace SPI_ROBOT
     /************************************************************************************************************************************/
 
     /*--------------------------------------------------------------- Conexão com BD---------------------------------------------------*/
-                    #region   
+        #region   
 
 
                     if (File.Exists(@"C:\Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db")) // verefica local onde esta BD
