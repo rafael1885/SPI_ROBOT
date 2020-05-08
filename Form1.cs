@@ -22,7 +22,7 @@ namespace SPI_ROBOT
         }
 
   /*************************************************************************************************************************/
-        /*--- Variáveis do sistema---*/
+    /*---------------- Variáveis do sistema---------------------*/
 
         #region[Variaveis do Sistema]
         [DllImport("User32.dll")]
@@ -87,7 +87,7 @@ namespace SPI_ROBOT
         #endregion
 
    /*************************************************************************************************************************/
-        /*--- Inicialização do formulário ---*/
+   /*------------- Inicialização do formulário ---------------------------*/
         #region
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -118,9 +118,7 @@ namespace SPI_ROBOT
                     lb_on_off.ForeColor = System.Drawing.Color.Red;
                     MessageBox.Show("Operando Off-line, Informe ao time de suporte", "ALERTA!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-
-
-            }
+             }
             catch (Exception)
             {
 
@@ -140,7 +138,7 @@ namespace SPI_ROBOT
         
  /*************************************************************************************************************************/
         
-            /*--- Método para abrir o prompt e inserir comandos ---*/
+ /*---------------- Método para abrir o prompt e inserir comandos --------------*/
         #region
         public void DOS(string command)
         {
@@ -158,9 +156,9 @@ namespace SPI_ROBOT
         }
         #endregion
 
-        /****************************************************************************************************************************/
+ /***********************************************************************************************************************************************************/
 
-        /*---Monitora o surgimento de um novo log de falha ---*/
+  /*---Monitora o surgimento de um novo log de falha ---*/
         #region
         private void Ciclo()
         {
@@ -172,9 +170,7 @@ namespace SPI_ROBOT
             }
             #endregion
             /******************************************************************************************************************************/
-
-
-            /*--- Verifica a existencia de um log de teste gerado pela SPI---*/
+   /*----------------- Verifica a existencia de um log de teste gerado pela SPI-------------------*/
             #region
             string[] arquivos = Directory.GetFiles(logpath, "*.txt");
             foreach (var log in arquivos)                                                   //este laço será executado para cada um dos arquivos .txt encontrados 
@@ -186,11 +182,56 @@ namespace SPI_ROBOT
 
 
                 #endregion
-                /******************************************************************************************************************************/
+   /******************************************************************************************************************************/
 
-                /*-------------------------------- Extração das informações de cada log contido no arquivo -----------------------------*/
+   /*--------------------------Veririfciar o caminho do arquivo BD---------------------------------------*/
                 #region
 
+                try
+                {
+
+                    SQLiteConnection.CreateFile(@"C:\Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db"); // cria um novo BD
+
+                    /*-------------------Estabelecer ligação com a base de dados--------------------------------------------------------*/
+
+                    SQLiteConnection ligacao = new SQLiteConnection();
+                    ligacao.ConnectionString = @"Data Source = C: \Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db; Version=3;";
+                    ligacao.Open();
+                    #endregion                /*----------------------------  criar Tabela na base de dados---------------------------------------------------*/
+    /************************************************************************************************************************************/
+    /*-----------------------------------------------Criando Tabela BD---------------------------------------------*/
+
+   /************************************************************************************************************************************/
+                    #region
+                    string query = "CREATE TABLE statistic" +
+                                   "(" +
+                                   "Part_number                      TEXT(50), " +
+                                   "Serial_number                    TEXT(50), " +
+                                   "linha                            TEXT(5), " +
+                                   "Painel_Placa                     TEXT, " +
+                                   "Data_Hora                        NUMERIC,  " +
+                                   "Placa_RPass                      TEXT (10), " +
+                                   "Placa_Repair                     TEXT (10), " +
+                                   "PAD                              TEXT (10), " +
+                                   "Placa_Pass                       TEXT(10) " +
+                                   ")";
+
+
+
+                    SQLiteCommand comando = new SQLiteCommand(query, ligacao);
+                    comando.ExecuteNonQuery();
+                 }
+                
+                catch (Exception)
+                {
+                    MessageBox.Show("Tabela não Criada", "ALERTA!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    System.Threading.Thread.CurrentThread.Abort();
+                    this.Close();
+                }
+                #endregion
+   /*-------------------------------- Extração das informações de cada log contido no arquivo -----------------------------*/
+                #region
                 int numero_linhas = File.ReadLines(log).Count();
                 for (int i = 1; i < numero_linhas; i++)  // faz leitura das linhas do log 
 
@@ -284,9 +325,9 @@ namespace SPI_ROBOT
 
                     #endregion
 
-                    /************************************************************************************************************************************/
+    /************************************************************************************************************************************/
 
-                    /*--------------------------------------------------------------- Conexão com BD---------------------------------------------------*/
+    /*--------------------------------------------------------------- Conexão com BD---------------------------------------------------*/
                     #region   
 
 
@@ -312,64 +353,26 @@ namespace SPI_ROBOT
 
                     }
 
-                    else
+                  
 
 
-                    {
+                    
 
-                        //------------------------------------------ criar a base de dados----------------------------------------------------------------------
+                    
 
-                        try
-                        {
-
-                            SQLiteConnection.CreateFile(@"C:\Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db"); // cria um novo BD
-
-                            /*-------------------Estabelecer ligação com a base de dados--------------------------------------------------------*/
-
-                            SQLiteConnection ligacao = new SQLiteConnection();
-                            ligacao.ConnectionString = @"Data Source = C: \Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db; Version=3;";
-                            ligacao.Open();
-
-                            /*----------------------------  criar Tabela na base de dados---------------------------------------------------*/
-
-                            string query = "CREATE TABLE statistic" +
-                                           "(" +
-                                           "Part_number                      TEXT(50), " +
-                                           "Serial_number                    TEXT(50), " +
-                                           "linha                            TEXT(5), " +
-                                           "Painel_Placa                     TEXT, " +
-                                           "Data_Hora                        NUMERIC,  " +
-                                           "Placa_RPass                      TEXT (10), " +
-                                           "Placa_Repair                     TEXT (10), " +
-                                           "PAD                              TEXT (10), " +
-                                           "Placa_Pass                       TEXT(10) " +
-                                           ")";
-
-
-
-                            SQLiteCommand comando = new SQLiteCommand(query, ligacao);
-                            comando.ExecuteNonQuery();
-                            
-                           
-
-
-                        }
-                        catch (Exception)
-                        {
-                            MessageBox.Show("Tabela não Criada", "ALERTA!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                            System.Threading.Thread.CurrentThread.Abort();
-                            this.Close();
-                        }
                        
-                     }
+                       
+                     
                   }
                 File.Delete(log);
             }
 
         }
         #endregion
-        /*------ Fechar a aplicação ------*/
+      /************************************************************************************************************************************/
+      
+       /*-------------------------------------------------------- Fechar a aplicação-----------------------------------*/
+        #region
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
 
@@ -388,5 +391,5 @@ namespace SPI_ROBOT
 
     }
 }
-
+#endregion
 
