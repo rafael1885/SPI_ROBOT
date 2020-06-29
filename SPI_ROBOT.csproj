@@ -108,6 +108,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HabilitarOperacaoOffline.cs">
       <SubType>Form</SubType>
     </Compile>
