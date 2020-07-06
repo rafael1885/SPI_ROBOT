@@ -8,31 +8,31 @@ using System.Windows.Forms;
 using System.Data.SQLite;
 using System.Data;
 using System.Collections.Generic;
+using System.Xml;
+using System.Globalization;
 
 namespace SPI_ROBOT
 {
     public partial class Form1 : Form
     {
-        private Timer timeX;
-
         public Form1()                                 
         {
             InitializeComponent();
 
-            timeX = new Timer() { Interval = 1000 };     //instancia a classe Timer e seta o parametro Interval com 1s
         }
 
-        /*************************************************************************************************************************/
-       
-        /*--- Variaveis do Sistema ---*/
-     
-        #region[Variaveis do Sistema]
-        [DllImport("User32.dll")]
-        static extern int SetForegroundWindow(IntPtr point);
 
-        [DllImport("user32.dll")]
-        static extern bool ClientToScreen(IntPtr hWnd, ref Point lpPoint);
-     
+        /*--- Variaveis do Sistema ---*/
+        #region[Variaveis do Sistema]
+
+        CultureInfo cultureBR = new CultureInfo("pt-BR");   //define o calendário brasileiro
+
+        CultureInfo cultureUSA = new CultureInfo("en-US");  //define o calendário americano
+
+        private Int64 indexStatistic_ID;
+
+        private Int64 indexFailure_ID;
+
         private string filename; public string Filename { get { return filename; } set { filename = value; } }
 
         private bool form_fechado; public bool Form_fechado { get { return form_fechado; } set { form_fechado = value; } }
@@ -63,70 +63,80 @@ namespace SPI_ROBOT
 
         private string painel_placa; public string pinel_placa { get { return painel_placa; } set { painel_placa = value; } }
 
-        private int log_id; public string Log_ID { get { return Log_ID; } set { Log_ID = value; } }
-
         //  private string rpass; public string Rpass { get { return rpass; } set { rpass = value; } }
 
-        private const int SW_MAXIMIZE = 3;
-        private const int SW_SHOWMINIMIZED = 2;
-        private const int SW_MINIMIZE = 6;
-        private const int SW_HIDE = 0;
-        private const int SW_RESTORE = 9;
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        string logpath = @"C:\Users\rafaelpin\Desktop\logs";  //aponta para o diretório onde são gerados os logs do teste da AIO
 
-        bool conectado;
-        private string conn;
-        private object console;
+        string logpath = @"C:\SPI_ROBOT\Logs";  //aponta para o diretório onde são gerados os logs do teste da AIO
+
         #endregion
 
         /*************************************************************************************************************************/
 
-        /*************************************************************************************************************************/
 
+        /*************************************************************************************************************************/
         /*--- Inicialização do Formulario ---*/
-        #region
         private void Form1_Load(object sender, EventArgs e)
         {
-           conectado = false;
+            timer1.Stop( );                                                 //paralisa o timer
+            indexStatistic_ID = 0;                                          //atribui 0 no inicio da aplicação
+            indexFailure_ID = 0;                                            //atribui 0 no indeice assim iniciar a aplicação
             try
             {
-                if (Directory.Exists(@"C:\EngTeste"))
+                if (Directory.Exists(@"\\10.8.2.73\engl06$\TestTool\"))     //verifica se o drive da engenharia esta mapeado
                 {
-                    conectado = true;
 
-                    if (File.Exists("operação.dll")) File.Delete("operação.dll"); // verifica se o diretorio existe
-                    File.WriteAllText("operacao.dll", "modo online" + Environment.NewLine);
-                    path = @"C:\EngTeste\";
                     lb_on_off.Font = new Font("Arial Black", 50);
                     lb_on_off.ForeColor = System.Drawing.Color.Green;
                     lb_on_off.Text = "ON";
                 }
-                else
+                else                                                        //se não encontrar o diver emite uma mansagem de alerta ao usuário
                 {
-                    conectado = false;
-                    if (File.Exists("operacao.dll")) File.Delete("operacao.dll"); //deleta o arquivo operacao.dll
-                    File.WriteAllText("operacao.dll", "modo offline" + Environment.NewLine);
-                    path = @"C:\EngTeste\";
-                    lb_on_off.Font = new Font("Arial Black", 50);
-                    lb_on_off.Text = "OFF";
-                    lb_on_off.BackColor = lb_on_off.ForeColor = System.Drawing.Color.Transparent;
-                    lb_on_off.ForeColor = System.Drawing.Color.Red;
-                    MessageBox.Show("Operando Off-line, Informe ao time de suporte", "ALERTA!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Drive de rede não encontrado! Conecte-se ao drive \\10.8.2.73\\engl06$", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-             }
-            catch (Exception)
+            }
+            catch (Exception ex)
             {
-
+                MessageBox.Show(ex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);               
             }
 
         }
-        #endregion
+
+        /*************************************************************************************************************************/
+
+        /*************************************************************************************************************************/
+        /*--- Inicia o processamento dos Logs - Iniciar timer1 ---*/
+        private void bt_Play_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if ( Directory.Exists(@"\\10.8.2.73\engl06$\TestTool\") )     //verifica se o drive da engenharia esta mapeado
+                {
+
+                    lb_on_off.Font = new Font("Arial Black", 50);
+                    lb_on_off.ForeColor = System.Drawing.Color.Green;
+                    lb_on_off.Text = "ON";
+                    lb_RUN.Visible = true;
+
+                    timer1.Start( );                                        //inicia o timer1
+                }
+                else                                                        //se não encontrar o diver emite uma mansagem de alerta ao usuário
+                {
+                    lb_RUN.Visible = false;
+                    timer1.Stop( );
+                    MessageBox.Show("Drive de rede não encontrado! Conecte-se ao drive \\10.8.2.73\\engl06$", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch ( Exception ex )
+            {
+                MessageBox.Show(ex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /*************************************************************************************************************************/
+
         /*************************************************************************************************************************/
         /*--- Inicia o Timer ---*/
-        #region
         private void timer1_Tick(object sender, EventArgs e)
         {
             timer1.Stop();
@@ -134,309 +144,299 @@ namespace SPI_ROBOT
             timer1.Start();
         }
 
-        #endregion
         /**************************************************************************************************************************/
-        /*************************************************************************************************************************/
 
-        /*--- Método para abrir o prompt e inserir comandos ---*/
-       #region
-        public void DOS(string command)
+
+        /*************************************************************************************************************************/
+        /*---Monitora o surgimento de um novo log de falha ----*/    
+        private void Ciclo()
         {
-            Process process = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.UseShellExecute = false;
-            startInfo.CreateNoWindow = true;
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/c " + command;
-            startInfo.RedirectStandardOutput = true;
-            process.StartInfo = startInfo;
-            process.Start();
-            process.WaitForExit();
-        }
-        #endregion
+            string nomeDB = DateTime.Now.ToString("MM_yyyy") + "SPI.db";                                            //estabelece o nome do banco de dados
 
-        /**************************************************************************************************************************/
-        /*************************************************************************************************************************/
+            /*----Cria tabela BD ---*/
 
-        /*---Monitora o surgimento de um novo log de falha ----*/
-      #region
-            private void Ciclo()
+            #region [cria o banco de dados do respectivo mês]
+
+            try
             {
-                                                                                          // Verifica se o formulário VisualizarUsuario foi fechado
-                if (form_fechado)
+                if ( !File.Exists(@"\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\" + nomeDB) )                      //verifica se o banco de dados do mês corrente existe
                 {
-                    this.Show();                                                         //exibe o formulário Form1
-                    form_fechado = false;                                               //indica que o formulári o VisualizarUsuario foi fechado
+                    SQLiteConnection.CreateFile(@"\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\" + nomeDB);         //cria o banco de dados
+
+                    System.Threading.Thread.Sleep(1000);                                                            //delay de 1 segundos
+
+                    SQLiteConnection ligacao = new SQLiteConnection(@"Data Source=\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\"+nomeDB+"; Version=3;", true); //cria a conexão com o DB
+
+                    ligacao.Open( );                                                                                //estabelece a conexão
+
+                    string query =  "CREATE TABLE Statistic" +                                                       // Criar tabela no BD
+                                    "(" +
+                                    "Statistic_ID       INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                                    "Serial_Number      TEXT(25), " +
+                                    "Part_Number        TEXT(15), " +
+                                    "Station            TEXT(10), " +
+                                    "Top_Bot            TEXT (3), " +
+                                    "Date               TEXT(12), " +
+                                    "Hour               TEXT(10), " +
+                                    "S_Status           TEXT(8), " +
+                                    "User               TEXT(10), " +
+                                    "Component_Number   NUMERIC, " +
+                                    "Defect_Number      NUMERIC " +
+                                    ")";
+
+                    SQLiteCommand comando1 = new SQLiteCommand(query, ligacao); // Comuncicando com BD
+                    comando1.ExecuteNonQuery( );
+
+
+                    query = "CREATE TABLE Failures" +                                                       // Criar tabela no BD
+                            "(" +
+                            "Failures_ID        INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                            "Statistic_ID       INTEGER , " +
+                            "F_Status           TEXT(8), " +
+                            "Component          TEXT(15), " +
+                            "Type_Fail          TEXT (15), " +
+                            "PAD                TEXT (10) " +
+                            ")";
+
+                    SQLiteCommand comando2 = new SQLiteCommand(query, ligacao); // Comuncicando com BD
+                    comando2.ExecuteNonQuery( );
+
+                    ligacao.Close( );
+
                 }
-                #endregion
-        /*************************************************************************************************************************/
-        /*************************************************************************************************************************/
-        /*--- Verifica a existencia de um log de teste gerado pela SPI---*/
-      #region
-                string[] arquivos = Directory.GetFiles(logpath, "*.txt");
-            foreach (var log in arquivos)                                                   //este laço será executado para cada um dos arquivos .txt encontrados 
-            {                                                                               // trata um único arquivo
 
-                System.Threading.Thread.Sleep(1000);                                        //delay de 1 segundos
+            }
+            catch ( Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close( );
+            }
 
-                DateTime hora_criacao = File.GetCreationTime(log);                          //captura o horári de criação do arquivo de log
+            #endregion
 
+            /*--- --------------------------------------------------------------------------------------------------------------- ---*/
 
-                #endregion
-                /*************************************************************************************************************************/
-                /*************************************************************************************************************************/
-                /*----Cria tabela BD ---*/
-                #region            
+            /*--- Lê as tabelas Statistic e Failures e captura o indice do ultimo registro ---*/
 
+            #region [Captura o indice do ultimo Registro]
 
-                //    try
-                //    {
-                //    if (File.Exists(@"C: \Users\rafaelpin\source\Repos\SPI_ROBOT\bin\Debug\spi_robot.db"))
-                //    {
+            try
+            {
+                SQLiteConnection ligacao = new SQLiteConnection(@"Data Source=\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\"+nomeDB+"; Version=3;", true);  //cria a conexão com o DB
+                ligacao.Open( );                                                                                                                            //estabelece a conexão
 
-                //    }
+                SQLiteDataAdapter index_Statistic = new SQLiteDataAdapter("SELECT MAX(Statistic_ID) FROM Statistic", ligacao);
+                DataTable tabelaAux = new DataTable();                                                                                                      //cria tabela auxiliar
+                index_Statistic.Fill(tabelaAux);                                                                                                            //imputa os valores do banco de dados na tabela
 
-                //    else
-                //    {
-                //        SQLiteConnection.CreateFile(@"C:\Users\rafaelpin\source\Repos\SPI_ROBOT\bin\Debug\spi_robot.db");
+                int numeroLinhas = tabelaAux.Rows.Count;                                                                                                    //conta quantas linhas foram retornadas da consulta
 
-                //        SQLiteConnection ligacao = new SQLiteConnection();
-                //        ligacao.ConnectionString = @"Data Source = C: \Users\rafaelpin\source\Repos\SPI_ROBOT\bin\Debug\spi_robot.db; Version=3;";
-                //        ligacao.Open();
+                string conteudoS = tabelaAux.Rows[0][0].ToString( );
 
-                //        string query = "CREATE TABLE statistic" +     // Criar tabela no BD
-                //        "(" +
-                //        "Log_ID                           TEXT(20), " +
-                //        "Serial_number                    TEXT(20), " +
-                //        "linha                            TEXT(3), " +
-                //        "Data_Hora                        NUMERIC,  " +
-                //        "ID_RPass                         TEXT (6), " +
-                //        "ID_Repair                        TEXT (6), " +
-                //        "PAD                              TEXT (10), " +
-                //        "Placa_Pass                       TEXT(6) " +
-                //        ")";
-
-
-
-                //        SQLiteCommand comando = new SQLiteCommand(query, ligacao); // Comuncicando com BD
-                //        comando.ExecuteNonQuery();
-                //    }
-
-
-                //}
-
-
-
-
-                //    catch (Exception)
-                //    {
-                //        MessageBox.Show("Tabela não Criada", "ALERTA!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                //        System.Threading.Thread.CurrentThread.Abort();
-                //        this.Close();
-                //    }
-                #endregion
-                /*************************************************************************************************************************/
-
-                /*************************************************************************************************************************/
-
-                /*--- Extração das informações de cada log contido no arquivo----*/
-                #region
-
-                int numero_linhas = File.ReadLines(log).Count(); // fazndo leitura do log
-                for (int i = 1; i < numero_linhas; i++)
-
+                if ( conteudoS != "" )
                 {
-                    if (numero_linhas > 0)
+                    indexStatistic_ID = Int32.Parse(tabelaAux.Rows[0][0].ToString( ));                                                                      //imputa o ultimo valor do indice da tabela Statistic
+                    indexStatistic_ID++;                                                                                                                    //incrementa o indice Statistic
+
+                    /*--- Captura o ultimo indice da tabela Failures ---*/
+
+                    SQLiteDataAdapter index_Failures = new SQLiteDataAdapter("SELECT MAX(Failures_ID) FROM Failures", ligacao);                              //seleciona o ultimo valor da chave primaria (Failure_ID)
+                    DataTable tabelaAuxF = new DataTable();                                                                                                 //cria tabela auxiliar
+                    index_Failures.Fill(tabelaAuxF);                                                                                                        //execulta a consulta e insere o resultado na tabela
+
+                    int numeroFalhas = tabelaAuxF.Rows.Count;                                                                                               //conta o numero de linhas da tabela auxiliar
+
+                    indexFailure_ID = Int32.Parse(tabelaAuxF.Rows[0][0].ToString( ));                                                                       //imputa o valor do ultimo index da tabela na varialve de index
+                    indexFailure_ID++;                                                                                                                      //incrementa a mesma
+
+                    /*--- --------------------------------------------------------------------------------------------------------------- ---*/
+                }
+
+                ligacao.Clone( );
+            }
+            catch ( Exception ex )
+            {
+
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close( );
+            }
+
+            #endregion
+
+            /*--- --------------------------------------------------------------------------------------------------------------- ---*/
+
+            /*--- Verifica a existencia de um log de teste gerado pela SPI---*/
+
+            string[] arquivos = Directory.GetFiles(logpath, "*.XML");
+            foreach (var log in arquivos)                                                       //este laço será executado para cada um dos arquivos .txt encontrados 
+            {
+                try
+                {
+                    System.Threading.Thread.Sleep(10);                                              //delay de 10 ms
+
+                    /*--- Lê as informações do log da SPI ---*/
+
+                    #region [Lê as informações do log da SPI]
+
+                    XmlDocument logXML = new XmlDocument();                                         //instancia o objeto que vai conter o documento XML
+
+                    logXML.Load(log);                                                               //carrega o arquivo XML dentro do objeto
+
+                    /*--- Lê informações comuns a todas as placas do log ---*/
+
+                    string StartTime = "'" + logXML.SelectSingleNode("TestXML").Attributes[0].Value + "'";
+
+                    string EndTime = "'" + logXML.SelectSingleNode("TestXML").Attributes[1].Value + "'";
+
+                    string Part_Number = "'" + logXML.SelectSingleNode("TestXML").Attributes[2].Value.Split('%')[0] + "'";      //captura o código do part number
+
+                    string Station = "'" + logXML.SelectSingleNode("TestXML").Attributes[3].Value + "'" ;                       //captura a estação de teste
+
+                    string Top_Bot = "'" + logXML.SelectSingleNode("TestXML").Attributes[6].Value + "'";                        //captura a indicação de qual lado da placa esta sendo testada
+
+                    DateTime Date_Hour = DateTime.Parse(logXML.SelectSingleNode("TestXML").Attributes[0].Value, cultureUSA);    //captura a data e hora do teste no formato DateTime
+
+                    string Date = "'" + Date_Hour.ToString("dd/MM/yyyy") + "'";                                                 //converte a data para o formato de string
+
+                    string Hour = "'" + Date_Hour.ToString("HH:mm:ss") + "'";                                                   //converte a hora para string
+
+                    string User = "'" + logXML.SelectSingleNode("TestXML").Attributes[5].Value + "'";                           //captura o ID do operador
+
+                    Int32 Component_Number = Int32.Parse(logXML.SelectSingleNode("TestXML").Attributes[7].Value);               //captura o numero de componentes inspecionados pela SPI
+
+                    Int32 Defect_Number = Int32.Parse(logXML.SelectSingleNode("TestXML").Attributes[8].Value);                  //captura o numero de componentes reprovados
+
+                    //strings panelstates = logXML.SelectSingleNode("TestXML").Attributes[4].Value;                             //captura o status geral do painel
+
+
+                    /*--- Lê informações específicas de cada placa ---*/
+
+                    SQLiteConnection ligacao = new SQLiteConnection(@"Data Source=\\10.8.2.73\engl06$\TestTool\SPI_Test\SPI_DB\"+nomeDB+"; Version=3;", true); //cria a conexão com o DB
+                    ligacao.Open( );                                    //abrir a conexão com o banco de dados
+
+                    int numeroPlacas = logXML.SelectSingleNode("TestXML").ChildNodes.Count;                                     //captura o número de placas existente no log
+                    for ( int i = 0; i < numeroPlacas; i++ )                                                                    //um loop para cada placa
                     {
-                        log_id++;
-                    }
+                        string Serial_Number = "'" + logXML.SelectSingleNode("TestXML").ChildNodes[i].Attributes[0].Value + "_" +
+                                                logXML.SelectSingleNode("TestXML").ChildNodes[i].Attributes[1].Value + "'";       //captura o serial number da placa mais o numero da mesma no painel
+                        string S_Status = "'" + logXML.SelectSingleNode("TestXML").ChildNodes[i].Attributes[2].Value + "'";
 
-                    linha_spi = File.ReadLines(log).Skip(i).Take(1).First();   // verifica a linha do log
-                    if ((linha_spi.Contains("SPI_")))
-                    {
-                        string[] ls = linha_spi.Split(';');
-                        linha_spi = ls[2];
-                        
-                    }
-                    part_number = File.ReadLines(log).Skip(i).Take(1).First(); // verificar parte number
-                    if (part_number.Contains("%"))
-                    {
-                        string[] pn = part_number.Split('%');
-                        part_number = pn[0];
+                        //string imulti = logXML.SelectSingleNode("TestXML").ChildNodes[i].Attributes[1].Value;
 
-                    }
-                    top_bot = File.ReadLines(log).Skip(i).Take(1).First();   // Verifica serial da placa 
-                    if ((top_bot.Contains("%")) || (Top_Bot.Contains("%")))
-                    {
-                        string[] tb = top_bot.Split('%');
-                        top_bot = tb[1];
-                    }
+                        /*--- Alimenta o Banco de Dados  Statistic ---*/
 
-                    serial_number = File.ReadLines(log).Skip(0).Take(1).First();   // Verifica serial da placa 
-                    if ((serial_number.Contains("SN")) || (serial_number.Contains(":")))
-                    {
-                        string[] sn = serial_number.Split(':');
-                        serial_number = sn[1];
-                    }
+                        #region [Alimenta o Banco de Dados  Statistic]
 
-                    else
-                    {
-                        serial_number = linha_spi + hora_criacao.ToString("yyyyMMdd_HHmmss");
+                        string queryStatistic = " INSERT INTO Statistic" +
+                                                "( " +
+                                                    "Statistic_ID, " +
+                                                    "Serial_Number, " +
+                                                    "Part_Number, " +
+                                                    "Station, " +
+                                                    "Top_Bot, " +
+                                                    "Date, " +
+                                                    "Hour, " +
+                                                    "S_Status, " +
+                                                    "User, "+
+                                                    "Component_Number, "+
+                                                    "Defect_Number "+
+                                                ") " +
+                                              "VALUES "+
+                                                "( " +
+                                                    indexStatistic_ID   + ", " +
+                                                    Serial_Number       + ", " +
+                                                    Part_Number         + ", " +
+                                                    Station             + ", " +
+                                                    Top_Bot             + ", " +
+                                                    Date                + ", " +
+                                                    Hour                + ", " +
+                                                    S_Status            + ", " +
+                                                    User                + ", " +
+                                                    Component_Number    + ", " +
+                                                    Defect_Number       +
+                                                ")";
 
-                    }
+                        SQLiteCommand comandoStatistic = new SQLiteCommand(queryStatistic, ligacao);     //cria o comando SQLite
+                        comandoStatistic.ExecuteNonQuery( );                                             //executa o comando SQLite
+                        comandoStatistic.Dispose( );
 
-                    painel_placa = File.ReadLines(log).Skip(i).Take(1).First(); // verifica numero referencia do painel da placa
-                    string[] sp = painel_placa.Split(';');
-                    painel_placa = sp[4];
+                        #endregion
 
+                        /*--- --------------------------------------------------------------------------------------------------------------- ---*/
 
-
-                    numero_pad = File.ReadLines(log).Skip(i).Take(2).First();    // verifica  numero do pad 
-                    if ((numero_pad.Contains("_")))
-
-                    {
-                        numero_pad = File.ReadLines(log).Skip(i).First();
-                        string[] np = numero_pad.Split(';');
-                        numero_pad = np[6];
-                    }
-                    else
-                    {
-                        numero_pad = "0";
-                    }
-
-                    placa_rpass = File.ReadLines(log).Skip(i).Take(1).First();  // numero de placa rpass
-                    if ((placa_rpass.Contains("Rpass")))
-                    {
-
-                        placa_rpass = File.ReadLines(log).Skip(i).First();
-                        string[] rpass = placa_rpass.Split(';');
-                        placa_rpass = rpass[5];
-                    }
-                    else
-                    {
-                        placa_rpass = "0";
-                    }
-
-                    placa_repair = File.ReadLines(log).Skip(i).Take(1).First(); // numero de placa repair//
-                    if ((placa_repair.Contains("Repair")))
-
-                    {
-                        placa_repair = File.ReadLines(log).Skip(i).First();
-                        string[] repair = placa_repair.Split(';');
-                        placa_repair = repair[5];
-
-                    }
-
-                    else
-
-                    {
-                        placa_repair = "0";
-                    }
-
-                    placa_pass = File.ReadLines(log).Skip(i).Take(1).First(); // numero de placa pass//
-                    if ((placa_pass.Contains("Pass")))
-                    {
-                        placa_pass = File.ReadLines(log).Skip(i).First();
-                        string[] pass = placa_pass.Split(';');
-                        placa_pass = pass[5];
-                    }
-
-                           else
+                        if ( (S_Status == "'FAIL'") || (S_Status == "'RPASS'") )                                                                //se a placa for RPASS ou FAIL verifica os componentes que falharam
+                        {
+                            int numeroFalhas = logXML.SelectSingleNode("TestXML").ChildNodes[i].ChildNodes.Count;                           //captura o número de componentes com falhas na placa
+                            for ( int a = 0; a < numeroFalhas; a++ )
                             {
-                                placa_pass = "0";
+                                string F_Status = "'" + logXML.SelectSingleNode("TestXML").ChildNodes[i].ChildNodes[a].Attributes[0].Value + "'";       //captura o status de falha do componente RPASS ou FAIL
+                                string Component = "'" + logXML.SelectSingleNode("TestXML").ChildNodes[i].ChildNodes[a].Attributes[1].Value + "'";      //captura o componente que falhou
+                                string PAD = "'" + logXML.SelectSingleNode("TestXML").ChildNodes[i].ChildNodes[a].Attributes[2].Value + "'";            //captura o numero do PAD do componente
+                                string Type_Fail = "'" + logXML.SelectSingleNode("TestXML").ChildNodes[i].ChildNodes[a].Attributes[3].Value + "'";      //captura o tipo de falha
+
+
+                                /*--- Alimenta o Banco de Dados  Failures ---*/
+
+                                #region [Alimenta o Banco de Dados  Failures]
+
+                                string queryFailures = " INSERT INTO Failures" +
+                                                        "( " +
+                                                            "Failures_ID, " +
+                                                            "Statistic_ID, " +
+                                                            "F_Status, " +
+                                                            "Component, " +
+                                                            "Type_Fail, " +
+                                                            "PAD " +
+                                                        ") " +
+                                                    "VALUES "+
+                                                        "( " +
+                                                            indexFailure_ID     + "," +
+                                                            indexStatistic_ID   + "," +
+                                                            F_Status            + "," +
+                                                            Component           + "," +
+                                                            Type_Fail           + "," +
+                                                            PAD                 +
+                                                        ")";
+
+                                SQLiteCommand comandoFailures = new SQLiteCommand(queryFailures, ligacao);      //cria o comando SQLite
+                                comandoFailures.ExecuteNonQuery( );                                             //executa o comando SQLite
+                                comandoFailures.Dispose( );
+
+                                indexFailure_ID++;                                                              //incrementa o indice da tabela
+
+                                #endregion
+
+                                /*--- --------------------------------------------------------------------------------------------------------------- ---*/
                             }
+                        }
 
+                        indexStatistic_ID++;                                                                    //incrementa o indice da tabela
+                    }
 
+                    ligacao.Clone( );                                                                           //encerra a ligação com o banco de dados
 
-
-
-
-
-
-                    
-                   
-                  
-
-
+                    /*--- --------------------------------------------------------------------------------------------------------------- ---*/
 
                     #endregion
 
-                    /**************************************************************************************************************************/
+                    /*--- --------------------------------------------------------------------------------------------------------------- ---*/
 
-                    /*************************************************************************************************************************/
-
-                    /*--- Conexão com BD----*/
-                    #region
-
-
-                    if (File.Exists(@"C:\Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db")) // verefica local onde esta BD
-
-                       
-                        {
-
-
-                                SQLiteConnection ligacao = new SQLiteConnection();
-                                ligacao.ConnectionString = @"Data Source = C: \Users\rafaelpin\source\repos\SPI_ROBOT\bin\Debug\spi_robot.db; Version=3;"; // faz a ligação do banco de dados
-                                ligacao.Open();
-
-                       
-                                string query = " INSERT INTO statistic( Serial_Number, Part_Number  , linha , Top_Bot , Data_Hora , Rpass_ID , Repair_ID , PAD , Placa_pass,Log_ID) VALUES ( '" + serial_number+ "'||'"+ ("_") +  painel_placa + "' , '" + part_number + "', '" + linha_spi +"' , '" + top_bot + "' , '" + hora_criacao + "' , '" + Placa_Rpass + "' , '" + Placa_Repair + "' , '" + numero_pad +  "' , '" + placa_pass + "', '" + log_id + "'); ";  //Grava as infromçãos do log no BD
-
-                      
-
-                        SQLiteCommand comando = new SQLiteCommand(query, ligacao);
-                                comando.ExecuteNonQuery();
-                                comando.Dispose();
-                                ligacao.Dispose();
-
-
-                        }
+                    File.Delete(log);   //deleta o log gerado pela SPI
                 }
-                    File.Delete(log);
+                catch ( Exception ex )
+                {
+                    MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Close( );
                 }
 
             }
 
-        private void Int64(string log_id)
-        {
-            throw new NotImplementedException();
         }
 
-        private void Int64(Func<string, string> isInterned)
-        {
-            throw new NotImplementedException();
-        }
-
-        private object idMaker()
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
         /**************************************************************************************************************************/
-
-        /*************************************************************************************************************************/
-
-        /*--- Fechar a aplicação---*/
-        #region
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-            {
-
-                DOS(@"taskkill /IM Tri_spi_RS.exe /F");
-                DOS(@"taskkill /IM SPI_RUN.exe /F");
-
-                System.Threading.Thread.CurrentThread.Abort();
-                this.Close();
-            }
-
-            private void lb_ROBOT_Click(object sender, EventArgs e)
-            {
-
-            }
-
-
-        }
     }
-    #endregion
+}
+
+
+
 
