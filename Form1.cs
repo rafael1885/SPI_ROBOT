@@ -276,6 +276,8 @@ namespace SPI_ROBOT
 
                     #region [Lê as informações do log da SPI]
 
+                    System.Threading.Thread.Sleep(2000);                                              //delay de 2000 ms
+
                     XmlDocument logXML = new XmlDocument();                                         //instancia o objeto que vai conter o documento XML
 
                     logXML.Load(log);                                                               //carrega o arquivo XML dentro do objeto
@@ -422,7 +424,7 @@ namespace SPI_ROBOT
                 }
                 catch ( Exception ex )
                 {
-                    MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Flag 1 - " + ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.Close( );
                 }
 
