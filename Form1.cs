@@ -218,7 +218,7 @@ namespace SPI_ROBOT
 
             /*--- Lê as tabelas Statistic e Failures e captura o indice do ultimo registro ---*/
 
-            #region [Captura o indice do ultimo Registro]
+            #region [Captura o indice (chave primaria) do ultimo Registro]
 
             try
             {
@@ -272,8 +272,6 @@ namespace SPI_ROBOT
             {
                 try
                 {
-                    System.Threading.Thread.Sleep(10);                                              //delay de 10 ms
-
                     /*--- Lê as informações do log da SPI ---*/
 
                     #region [Lê as informações do log da SPI]
@@ -420,8 +418,7 @@ namespace SPI_ROBOT
                     #endregion
 
                     /*--- --------------------------------------------------------------------------------------------------------------- ---*/
-
-                    File.Delete(log);   //deleta o log gerado pela SPI
+                    
                 }
                 catch ( Exception ex )
                 {
@@ -429,6 +426,27 @@ namespace SPI_ROBOT
                     this.Close( );
                 }
 
+                try
+                {
+                    System.Threading.Thread.Sleep(100);                                              //delay de 100 ms
+                    File.Delete(log);   //deleta o log gerado pela SPI
+                }
+                catch ( Exception )
+                {
+                    try
+                    {
+                        System.Threading.Thread.Sleep(1500);                                              //delay de 1500 ms
+                        File.Delete(log);   //deleta o log gerado pela SPI
+                    }
+                    catch ( Exception ex)
+                    {
+
+                        MessageBox.Show("Delete Log - " + ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        this.Close( );
+                    }
+                    
+                }
+                
             }
 
         }
