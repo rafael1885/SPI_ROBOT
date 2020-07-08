@@ -276,7 +276,7 @@ namespace SPI_ROBOT
 
                     #region [Lê as informações do log da SPI]
 
-                    System.Threading.Thread.Sleep(2000);                                              //delay de 2000 ms
+                    System.Threading.Thread.Sleep(5000);                                              //delay de 5000 ms
 
                     XmlDocument logXML = new XmlDocument();                                         //instancia o objeto que vai conter o documento XML
 

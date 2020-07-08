@@ -74,10 +74,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>224E203045A6F5C5FFBAE7875BBD2841151741F3</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>0E9561BC10A7E87F2EDFDFD328B905F142D04A01</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>SPI_ROBOT_4_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>SPI_ROBOT_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -133,6 +133,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="SPI_ROBOT_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AIO.ico" />
