@@ -292,7 +292,7 @@ namespace SPI_ROBOT
 
                     string Station = "'" + logXML.SelectSingleNode("TestXML").Attributes[3].Value + "'" ;                       //captura a estação de teste
 
-                    string Top_Bot = "'" + logXML.SelectSingleNode("TestXML").Attributes[6].Value + "'";                        //captura a indicação de qual lado da placa esta sendo testada
+                    string Top_Bot = "'" + logXML.SelectSingleNode("TestXML").Attributes[2].Value.Split('%')[1] + "'";                        //captura a indicação de qual lado da placa esta sendo testada
 
                     DateTime Date_Hour = DateTime.Parse(logXML.SelectSingleNode("TestXML").Attributes[0].Value, cultureUSA);    //captura a data e hora do teste no formato DateTime
 
